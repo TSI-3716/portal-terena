@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📌 Portal Terena Web
 
-## Getting Started
+Aplicação web do **Portal Terena**, desenvolvida com `Next.js`, `React`, `TypeScript` e `Tailwind CSS`.
 
-First, run the development server:
+O projeto disponibiliza conteúdos sobre o povo Terena, com páginas de **aldeias**, **cultura**, **juventude**, **notícias**, **projetos** e a seção da **Aldeia Inamaty Kaxe**.
+
+## ✅ Requisitos
+
+Antes de começar, tenha instalado na sua máquina:
+
+- `Node.js` 20 ou superior
+- `npm` 10 ou superior
+
+Para conferir as versões instaladas:
+
+```bash
+node -v
+npm -v
+```
+
+## 📦 Instalação
+
+1. Entre na pasta do projeto:
+
+```bash
+cd web
+```
+
+2. Instale as dependências:
+
+```bash
+npm install
+```
+
+## 🚀 Como rodar em desenvolvimento
+
+Inicie o servidor local:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Depois, abra no navegador:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+[`http://localhost:3000`](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O projeto recarrega automaticamente conforme os arquivos são alterados.
 
-## Learn More
+## 🧾 Scripts disponíveis
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev`: inicia o ambiente de desenvolvimento
+- `npm run build`: gera a versão de produção
+- `npm run start`: inicia a aplicação em modo produção
+- `npm run lint`: executa a validação com ESLint
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏗️ Build de produção
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Para testar a aplicação em modo de produção localmente:
 
-## Deploy on Vercel
+```bash
+npm run build
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗂️ Estrutura principal
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Principais pastas e arquivos:
+
+- `src/app`: rotas e páginas da aplicação
+- `src/components`: componentes reutilizáveis da interface
+- `src/lib`: utilitários, navegação e schemas
+- `src/app/globals.css`: estilos globais
+- `components.json`: configuração do `shadcn/ui`
+
+## 🗺️ Principais rotas
+
+O portal possui páginas como:
+
+- `/`
+- `/aldeias`
+- `/cultura`
+- `/juventude`
+- `/noticias`
+- `/projetos`
+- `/feira`
+- `/contato`
+- `/aldeias/inamaty-kaxe`
+
+## 🔐 Variáveis de ambiente
+
+No estado atual, o projeto não possui arquivos `.env` versionados nem referências a variáveis de ambiente no código.
+
+Se no futuro alguma integração exigir configurações externas, este README pode ser atualizado com a lista das variáveis necessárias.
+
+## 🧩 Stack utilizada
+
+- `Next.js 16`
+- `React 19`
+- `TypeScript`
+- `Tailwind CSS 4`
+- `ESLint`
+- `shadcn/ui`
+
+## 🔗 Referências
+
+- [Documentação do Next.js](https://nextjs.org/docs)
+- [Documentação do React](https://react.dev/)
