@@ -68,7 +68,7 @@ Principais pastas e arquivos:
 
 - `src/app`: rotas e páginas da aplicação
 - `src/components`: componentes reutilizáveis da interface
-- `src/lib`: utilitários, navegação e schemas
+- `src/lib`: utilitários, navegação e cliente do Supabase
 - `src/app/globals.css`: estilos globais
 - `components.json`: configuração do `shadcn/ui`
 
@@ -84,13 +84,41 @@ O portal possui páginas como:
 - `/projetos`
 - `/feira`
 - `/contato`
+- `/login`
+- `/conta`
 - `/aldeias/inamaty-kaxe`
 
 ## 🔐 Variáveis de ambiente
 
-No estado atual, o projeto não possui arquivos `.env` versionados nem referências a variáveis de ambiente no código.
+As credenciais reais ficam no arquivo `.env.local`, que **não sobe para o GitHub**.
 
-Se no futuro alguma integração exigir configurações externas, este README pode ser atualizado com a lista das variáveis necessárias.
+1. Copie o exemplo:
+
+```bash
+cp .env.example .env.local
+```
+
+No Windows (PowerShell):
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+2. Preencha com os dados do seu projeto no [Supabase](https://supabase.com/dashboard):
+
+- `NEXT_PUBLIC_SUPABASE_URL`: URL do projeto
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: chave `anon` / `publishable` (pública, mas mesmo assim não deve ir para o Git)
+
+Essas duas chaves são as que o Auth do Supabase já oferece. **Não use a `service_role` no frontend.**
+
+## 🔑 Login com Supabase
+
+O login é só **e-mail e senha**, usando o Auth nativo do Supabase. Não há criação de conta neste site: o usuário precisa já existir no painel do Supabase.
+
+1. No painel do Supabase, abra **Authentication → Users** e crie um usuário de teste, se ainda não existir.
+2. Rode o projeto e abra [`http://localhost:3000/login`](http://localhost:3000/login).
+3. Entre com o e-mail e a senha desse usuário.
+4. Se der certo, você cai em `/conta` com a sessão ativa.
 
 ## 🧩 Stack utilizada
 

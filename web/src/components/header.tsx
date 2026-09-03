@@ -62,6 +62,12 @@ export function Header() {
           />
           <button type="button">⌕</button>
         </div>
+        <Link
+          className={pathname.startsWith("/login") ? "auth-nav active" : "auth-nav"}
+          href="/login"
+        >
+          Entrar
+        </Link>
       </div>
     </header>
   );
