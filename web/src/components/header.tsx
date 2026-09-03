@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Search } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { navLinks } from "@/lib/nav";
 
 export function Header() {
@@ -60,7 +62,9 @@ export function Header() {
             onChange={(event) => onSearch(event.target.value)}
             placeholder="Buscar no portal..."
           />
-          <button type="button">⌕</button>
+          <Button type="button" size="icon" aria-label="Buscar">
+            <Search />
+          </Button>
         </div>
         <Link
           className={pathname.startsWith("/login") ? "auth-nav active" : "auth-nav"}
