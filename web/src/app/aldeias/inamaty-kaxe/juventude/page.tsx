@@ -1,22 +1,13 @@
 import type { Metadata } from "next";
+import { PlaceholderPage } from "@/components/placeholder-page";
 
 export const metadata: Metadata = { title: "Juventude | Inamaty Kaxé" };
 
 export default function InamatyJuventudePage() {
   return (
-    <>
-      <div className="inamaty-title">
-        <h1>Juventude</h1>
-        <p>Protagonismo das novas gerações na Inamaty Kaxé.</p>
-      </div>
-      <section className="section">
-        <div className="content-card">
-          <p>
-            Conteúdo desta tela será preenchido na próxima etapa, a partir do
-            HTML de exemplo.
-          </p>
-        </div>
-      </section>
-    </>
+    <PlaceholderPage
+      title="Juventude"
+      description="Protagonismo das novas gerações na Inamaty Kaxé."
+    />
   );
 }
