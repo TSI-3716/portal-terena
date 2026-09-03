@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/hero";
+import { MediaPlaceholder } from "@/components/media-placeholder";
 import { SiteCard } from "@/components/site-card";
+import { PageSection, SectionHeader } from "@/components/site-layout";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { VillageMap } from "@/components/village-map";
+import { Field, FieldLabel } from "@/components/ui/field";
 
 export const metadata: Metadata = { title: "Nossas Aldeias" };
 
@@ -13,90 +26,84 @@ export default function AldeiasPage() {
         title="Nossas Aldeias"
         description="O povo Terena vive em diferentes aldeias localizadas em Mato Grosso do Sul. Conheça onde estamos."
       />
-      <section className="section">
-        <div className="site-container">
-          <div className="two-col">
-            <div className="map-box">
-              <div className="map-fallback" />
-              <div className="map-overlay">
-                <span className="map-pin">● Aquidauana</span>
-                <span className="map-pin">● Miranda</span>
-                <span className="map-pin">● Nioaque</span>
-                <span className="map-pin">● Campo Grande</span>
-              </div>
-            </div>
-            <div className="panel">
-              <h2>Filtre no mapa</h2>
-              <p>Explore as localidades e encontre informações sobre as aldeias.</p>
-              <div className="field">
-                <select>
-                <option>Todos os municípios</option>
-                <option>Aquidauana</option>
-                <option>Miranda</option>
-                <option>Nioaque</option>
-                <option>Sidrolândia</option>
-                </select>
-              </div>
-              <div className="quote">
+      <PageSection>
+        <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
+          <VillageMap
+            places={["Aquidauana", "Miranda", "Nioaque", "Campo Grande"]}
+          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">Filtre no mapa</CardTitle>
+              <CardDescription>
+                Explore as localidades e encontre informações sobre as aldeias.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Field>
+                <FieldLabel>Município</FieldLabel>
+                <NativeSelect className="w-full">
+                  <NativeSelectOption>Todos os municípios</NativeSelectOption>
+                  <NativeSelectOption>Aquidauana</NativeSelectOption>
+                  <NativeSelectOption>Miranda</NativeSelectOption>
+                  <NativeSelectOption>Nioaque</NativeSelectOption>
+                  <NativeSelectOption>Sidrolândia</NativeSelectOption>
+                </NativeSelect>
+              </Field>
+              <p className="rounded-lg border bg-accent px-4 py-3 text-sm font-medium text-primary">
                 + de 30 aldeias espalhadas pelo estado de Mato Grosso do Sul.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="section" style={{ background: "#fbfaf6" }}>
-        <div className="site-container">
-          <div className="section-head">
-            <h2>Destaques das Aldeias</h2>
-          </div>
-          <div className="grid grid-3">
-            <SiteCard
-              search="bananal sidrolandia"
-              meta="⌖ Sidrolândia - MS"
-              title="Aldeia Bananal"
-              description="Tradição cultural, atividades comunitárias e valorização das tradições ancestrais."
-              hrefLabel="Ver detalhes →"
-            />
-            <SiteCard
-              search="buriti aquidauana"
-              meta="⌖ Aquidauana - MS"
-              title="Aldeia Buriti"
-              description="Conhecida pela produção de artesanato e preservação da língua e costumes Terena."
-              hrefLabel="Ver detalhes →"
-            />
-            <SiteCard
-              search="lagoinha nioaque"
-              meta="⌖ Nioaque - MS"
-              title="Aldeia Lagoinha"
-              description="Aldeia com forte ligação com a natureza e celebrações culturais."
-              hrefLabel="Ver detalhes →"
-            />
-          </div>
-        </div>
-      </section>
-      <section className="section" style={{ background: "#f7f4ec" }}>
-        <div className="site-container">
-          <div className="section-head">
-            <div>
-              <h2>Aldeia Inamaty Kaxé</h2>
-              <p>
-                Conheça a área dedicada à história, cultura, juventude,
-                projetos, eventos, localização, galeria e contato da aldeia.
               </p>
-            </div>
-            <Link className="btn primary" href="/aldeias/inamaty-kaxe">
-              Conhecer Inamaty Kaxé →
-            </Link>
-          </div>
-          <article className="card">
-            <div className="card-img" style={{ height: 220 }} />
-            <div className="card-body">
-              <h3>Portal da Aldeia Inamaty Kaxé</h3>
-              <p>Seção interna do Portal Terena, com as telas da aldeia.</p>
-            </div>
-          </article>
+            </CardContent>
+          </Card>
         </div>
-      </section>
+      </PageSection>
+      <PageSection muted>
+        <SectionHeader title="Destaques das Aldeias" />
+        <div className="grid gap-4 md:grid-cols-3">
+          <SiteCard
+            search="bananal sidrolandia"
+            meta="Sidrolândia - MS"
+            title="Aldeia Bananal"
+            description="Tradição cultural, atividades comunitárias e valorização das tradições ancestrais."
+            hrefLabel="Ver detalhes"
+          />
+          <SiteCard
+            search="buriti aquidauana"
+            meta="Aquidauana - MS"
+            title="Aldeia Buriti"
+            description="Conhecida pela produção de artesanato e preservação da língua e costumes Terena."
+            hrefLabel="Ver detalhes"
+          />
+          <SiteCard
+            search="lagoinha nioaque"
+            meta="Nioaque - MS"
+            title="Aldeia Lagoinha"
+            description="Aldeia com forte ligação com a natureza e celebrações culturais."
+            hrefLabel="Ver detalhes"
+          />
+        </div>
+      </PageSection>
+      <PageSection className="bg-secondary">
+        <SectionHeader
+          title="Aldeia Inamaty Kaxé"
+          description="Conheça a área dedicada à história, cultura, juventude, projetos, eventos, localização, galeria e contato da aldeia."
+          action={
+            <Button asChild>
+              <Link href="/aldeias/inamaty-kaxe">Conhecer Inamaty Kaxé</Link>
+            </Button>
+          }
+        />
+        <Card className="pt-0">
+          <MediaPlaceholder className="h-52" />
+          <CardHeader>
+            <CardTitle className="text-primary">
+              Portal da Aldeia Inamaty Kaxé
+            </CardTitle>
+            <CardDescription>
+              Seção interna do Portal Terena, com as telas da aldeia.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </PageSection>
     </>
   );
 }

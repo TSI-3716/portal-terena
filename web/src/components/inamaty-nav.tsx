@@ -2,22 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { inamatyLinks } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 
 export function InamatyNav() {
   const pathname = usePathname();
 
   return (
-    <div className="inamaty-local">
-      <strong>INAMATY KAXÉ</strong>
+    <div className="mt-4 mb-2 flex items-center gap-2 overflow-x-auto rounded-xl border bg-muted/40 p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <span className="shrink-0 px-2 text-xs font-semibold tracking-wide text-primary">
+        INAMATY KAXÉ
+      </span>
       {inamatyLinks.map((link) => (
-        <Link
+        <Button
           key={link.href}
-          href={link.href}
-          className={pathname === link.href ? "active" : ""}
+          variant={pathname === link.href ? "default" : "ghost"}
+          size="xs"
+          asChild
+          className={cn("shrink-0")}
         >
-          {link.label}
-        </Link>
+          <Link href={link.href}>{link.label}</Link>
+        </Button>
       ))}
     </div>
   );

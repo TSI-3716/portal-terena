@@ -1,4 +1,11 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export function Tile({
   icon,
@@ -6,26 +13,26 @@ export function Tile({
   description,
   href,
 }: {
-  icon: string;
+  icon: ReactNode;
   title: string;
   description: string;
   href?: string;
 }) {
   const content = (
-    <>
-      <div className="icon">{icon}</div>
-      <h3>{title}</h3>
-      <p>{description}</p>
-    </>
+    <Card className="h-full transition-colors hover:bg-accent/40">
+      <CardHeader>
+        <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-accent text-primary">
+          {icon}
+        </div>
+        <CardTitle className="text-primary">{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+    </Card>
   );
 
   if (href) {
-    return (
-      <Link className="tile" href={href}>
-        {content}
-      </Link>
-    );
+    return <Link href={href}>{content}</Link>;
   }
 
-  return <div className="tile">{content}</div>;
+  return content;
 }
