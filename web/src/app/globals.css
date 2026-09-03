@@ -189,10 +189,9 @@
 }
 .search button {
   border: 0;
-  background: var(--green);
-  color: #fff;
-  width: 42px;
-  cursor: pointer;
+  border-radius: 0;
+  height: 100%;
+  width: 38px;
 }
 .auth-nav {
   font-size: 13px;
