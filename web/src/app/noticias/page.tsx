@@ -6,6 +6,7 @@ import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { NativeSelectOption } from "@/components/ui/native-select";
+import { getPublicAssetUrl } from "@/lib/storage";
 
 export const metadata: Metadata = { title: "Notícias" };
 
@@ -16,6 +17,7 @@ export default function NoticiasPage() {
         eyebrow="Informação e comunidade"
         title="Notícias"
         description="Acompanhe as notícias do povo Terena, informações, cultura e acontecimentos das aldeias e de Mato Grosso do Sul."
+        imageSrc={getPublicAssetUrl("noticias.jpg")}
       />
       <PageSection>
         <SectionHeader title="Últimas notícias em destaque" />
