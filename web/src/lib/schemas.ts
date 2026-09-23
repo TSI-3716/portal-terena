@@ -12,3 +12,32 @@ export const contatoSchema = z.object({
 });
 
 export type ContatoInput = z.infer<typeof contatoSchema>;
+
+export const noticiaStatuses = ["rascunho", "publicado"] as const;
+
+export const noticiaStatusLabel = {
+  rascunho: "Rascunho",
+  publicado: "Publicado",
+} as const;
+
+export const noticiaSchema = z.object({
+  titulo: z.string().trim().min(3, "Informe o título"),
+  resumo: z
+    .string()
+    .trim()
+    .min(10, "Escreva um resumo com pelo menos 10 caracteres"),
+  conteudo: z
+    .string()
+    .trim()
+    .min(10, "Escreva o conteúdo com pelo menos 10 caracteres"),
+  data_publicacao: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Informe a data de publicação"),
+  status: z.string().refine(
+    (value): value is (typeof noticiaStatuses)[number] =>
+      value === "rascunho" || value === "publicado",
+    { message: "Selecione o status" },
+  ),
+});
+
+export type NoticiaInput = z.infer<typeof noticiaSchema>;

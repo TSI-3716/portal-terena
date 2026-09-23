@@ -14,6 +14,11 @@ function supabaseStorageHost() {
 const supabaseHost = supabaseStorageHost();
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "3mb",
+    },
+  },
   images: {
     remotePatterns: supabaseHost
       ? [

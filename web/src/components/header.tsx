@@ -54,7 +54,13 @@ function filterCards(value: string) {
   });
 }
 
-export function Header() {
+export function Header({
+  accountHref = "/login",
+  accountLabel = "Entrar",
+}: {
+  accountHref?: string;
+  accountLabel?: string;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -109,12 +115,12 @@ export function Header() {
         />
 
         <Button
-          variant={pathname.startsWith("/login") ? "default" : "outline"}
+          variant={isActive(accountHref) ? "default" : "outline"}
           size="sm"
           asChild
           className="hidden sm:inline-flex"
         >
-          <Link href="/login">Entrar</Link>
+          <Link href={accountHref}>{accountLabel}</Link>
         </Button>
 
         <Sheet open={open} onOpenChange={setOpen}>
@@ -157,8 +163,8 @@ export function Header() {
                 ))}
               </nav>
               <Button asChild>
-                <Link href="/login" onClick={() => setOpen(false)}>
-                  Entrar
+                <Link href={accountHref} onClick={() => setOpen(false)}>
+                  {accountLabel}
                 </Link>
               </Button>
             </div>

@@ -30,12 +30,12 @@ export async function proxy(request: NextRequest) {
   const logado = Boolean(data?.claims);
   const path = request.nextUrl.pathname;
 
-  if (!logado && path.startsWith("/conta")) {
+  if (!logado && (path.startsWith("/conta") || path.startsWith("/admin"))) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   if (logado && path.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/conta", request.url));
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return response;

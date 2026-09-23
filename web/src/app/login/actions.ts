@@ -23,7 +23,7 @@ export async function login(_prev: { error: string } | null, formData: FormData)
   }
 
   revalidatePath("/", "layout");
-  redirect("/conta");
+  redirect("/admin");
 }
 
 export async function logout() {

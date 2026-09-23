@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MediaPlaceholder } from "@/components/media-placeholder";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,8 @@ export function SiteCard({
   hrefLabel = "Ver mais",
   meta,
   search,
+  imageSrc,
+  imageAlt = "",
 }: {
   title: string;
   description: string;
@@ -24,10 +27,24 @@ export function SiteCard({
   hrefLabel?: string;
   meta?: string;
   search?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }) {
   return (
     <Card className="pt-0" data-search={search}>
-      <MediaPlaceholder />
+      {imageSrc ? (
+        <div className="relative h-36 w-full">
+          <Image
+            src={imageSrc}
+            alt={imageAlt}
+            fill
+            sizes="(max-width: 768px) 100vw, 360px"
+            className="object-cover"
+          />
+        </div>
+      ) : (
+        <MediaPlaceholder />
+      )}
       <CardHeader>
         {meta ? <Badge variant="secondary">{meta}</Badge> : null}
         <CardTitle className="text-primary">{title}</CardTitle>

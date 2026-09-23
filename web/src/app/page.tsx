@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Hero } from "@/components/hero";
+import { NoticiaList } from "@/components/noticia-list";
 import { SiteCard } from "@/components/site-card";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
 import { VillageMap } from "@/components/village-map";
+import { listNoticiasPublicas } from "@/lib/noticias";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const noticias = await listNoticiasPublicas("", 3);
   return (
     <>
       <Hero
@@ -60,6 +63,19 @@ export default function HomePage() {
           />
         </div>
       </PageSection>
+      {noticias.length > 0 ? (
+        <PageSection>
+          <SectionHeader
+            title="Notícias"
+            action={
+              <Button variant="outline" asChild>
+                <Link href="/noticias">Ver notícias</Link>
+              </Button>
+            }
+          />
+          <NoticiaList noticias={noticias} />
+        </PageSection>
+      ) : null}
     </>
   );
 }
