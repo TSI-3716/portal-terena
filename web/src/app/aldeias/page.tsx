@@ -82,28 +82,6 @@ export default function AldeiasPage() {
           />
         </div>
       </PageSection>
-      <PageSection className="bg-secondary">
-        <SectionHeader
-          title="Aldeia Inamaty Kaxé"
-          description="Conheça a área dedicada à história, cultura, juventude, projetos, eventos, localização, galeria e contato da aldeia."
-          action={
-            <Button asChild>
-              <Link href="/aldeias/inamaty-kaxe">Conhecer Inamaty Kaxé</Link>
-            </Button>
-          }
-        />
-        <Card className="pt-0">
-          <MediaPlaceholder className="h-52" />
-          <CardHeader>
-            <CardTitle className="text-primary">
-              Portal da Aldeia Inamaty Kaxé
-            </CardTitle>
-            <CardDescription>
-              Seção interna do Portal Terena, com as telas da aldeia.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </PageSection>
     </>
   );
 }
