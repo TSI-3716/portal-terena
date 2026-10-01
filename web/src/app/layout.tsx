@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { createClient } from "@/lib/supabase";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,7 +19,13 @@ export const metadata: Metadata = {
     "Conheça a cultura, as aldeias, os projetos, as notícias e as iniciativas do povo Terena.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const account = data.user
+    ? { href: "/admin", label: "Administração" }
+    : { href: "/login", label: "Entrar" };
+
   return (
     <html
       lang="pt-BR"
@@ -26,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} h-full antialiased`}
     >
       <body className={`${inter.className} flex min-h-full flex-col`}>
-        <Header />
+        <Header accountHref={account.href} accountLabel={account.label} />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

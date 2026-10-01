@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/login/actions";
 import { Hero } from "@/components/hero";
@@ -41,11 +42,16 @@ export default async function ContaPage() {
               <p className="text-sm font-medium text-primary">E-mail</p>
               <p className="text-sm text-muted-foreground">{data.user.email}</p>
             </div>
-            <form action={logout}>
-              <Button type="submit" variant="outline">
-                Sair
+            <div className="flex flex-wrap gap-2">
+              <Button asChild>
+                <Link href="/admin">Administração</Link>
               </Button>
-            </form>
+              <form action={logout}>
+                <Button type="submit" variant="outline">
+                  Sair
+                </Button>
+              </form>
+            </div>
           </CardContent>
         </Card>
       </PageSection>
