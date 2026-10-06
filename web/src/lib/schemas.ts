@@ -41,3 +41,16 @@ export const noticiaSchema = z.object({
 });
 
 export type NoticiaInput = z.infer<typeof noticiaSchema>;
+
+export const artesanatoSchema = z.object({
+  nome: z.string().trim().min(3, "Informe o nome do produto"),
+  descricao: z
+    .string()
+    .trim()
+    .min(10, "Escreva uma descrição com pelo menos 10 caracteres"),
+  categoria: z.string().trim().min(1, "Informe a categoria"),
+  preco: z.coerce.number().min(0, "O preço não pode ser negativo"),
+  disponivel: z.coerce.boolean(),
+});
+
+export type ArtesanatoInput = z.infer<typeof artesanatoSchema>;
