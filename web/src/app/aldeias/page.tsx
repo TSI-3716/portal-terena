@@ -26,6 +26,7 @@ export default function AldeiasPage() {
         title="Nossas Aldeias"
         description="O povo Terena vive em diferentes aldeias localizadas em Mato Grosso do Sul. Conheça onde estamos."
       />
+
       <PageSection>
         <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
           <VillageMap
