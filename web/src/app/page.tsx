@@ -11,11 +11,33 @@ export default async function HomePage() {
   const noticias = await listNoticiasPublicas("", 3);
   return (
     <>
+
       <Hero
-        eyebrow="Kó'ene! Seja bem-vindo ao Portal Terena"
-        title="Nossa história, nossa identidade"
-        description="Conheça a cultura, as aldeias, os projetos, as notícias e as iniciativas do povo Terena."
+        slides={[
+          {
+            eyebrow: "Portal Terena",
+            title: "Povo Terena",
+            description: "Conheça nossa história, cultura e território.",
+            imageSrc: "/imagens/home_hero.jpg",
+            imageAlt: "Povo Terena",
+          },
+          {
+            eyebrow: "Nossa cultura",
+            title: "Tradição e identidade",
+            description: "Conheça a cultura e as tradições do povo Terena.",
+            imageSrc: "/imagens/cultura_2.jpg",
+            imageAlt: "Cultura Terena",
+          },
+          {
+            eyebrow: "Nossas aldeias",
+            title: "Território e comunidade",
+            description: "Conheça as aldeias e comunidades Terena.",
+            imageSrc: "/imagens/aldeias_2.jpg",
+            imageAlt: "Aldeia Terena",
+          },
+        ]}
       />
+
       <PageSection>
         <SectionHeader
           title="Nossas Aldeias"
