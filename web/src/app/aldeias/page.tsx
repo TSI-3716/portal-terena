@@ -26,6 +26,7 @@ export default function AldeiasPage() {
         title="Nossas Aldeias"
         description="O povo Terena vive em diferentes aldeias localizadas em Mato Grosso do Sul. Conheça onde estamos."
       />
+
       <PageSection>
         <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
           <VillageMap
@@ -60,6 +61,14 @@ export default function AldeiasPage() {
         <SectionHeader title="Destaques das Aldeias" />
         <div className="grid gap-4 md:grid-cols-3">
           <SiteCard
+            search="inamaty kaxe aquidauana"
+            meta="Aquidauana - MS"
+            title="Inamaty Kaxé"
+            description="Comunidade Terena com rica produção artesanal, tradições culturais e língua preservada."
+            href="/aldeias/inamaty-kaxe"
+            hrefLabel="Ver detalhes"
+          />
+          <SiteCard
             search="bananal sidrolandia"
             meta="Sidrolândia - MS"
             title="Aldeia Bananal"
@@ -71,13 +80,6 @@ export default function AldeiasPage() {
             meta="Aquidauana - MS"
             title="Aldeia Buriti"
             description="Conhecida pela produção de artesanato e preservação da língua e costumes Terena."
-            hrefLabel="Ver detalhes"
-          />
-          <SiteCard
-            search="lagoinha nioaque"
-            meta="Nioaque - MS"
-            title="Aldeia Lagoinha"
-            description="Aldeia com forte ligação com a natureza e celebrações culturais."
             hrefLabel="Ver detalhes"
           />
         </div>
