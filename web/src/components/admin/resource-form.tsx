@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { ImageField } from "@/components/admin/image-field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import type {
   Option,
   ResourceFormState,
 } from "@/lib/admin/fields";
+import { parseFormData } from "@/lib/admin/parse";
+import { liveFieldErrors } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 
 const inputTypes = {
@@ -49,9 +51,25 @@ export function ResourceForm({
   cancelHref: string;
 }) {
   const [state, formAction, pending] = useActionState(action, null);
-  // Depois de um erro, o formulário remonta (key) com os valores enviados.
-  const values = state?.values ?? initialValues;
-  const errors = state?.fieldErrors ?? {};
+  const [local, setLocal] = useState<FormValues | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const values = local ?? state?.values ?? initialValues;
+
+  function setField(name: string, value: string) {
+    setLocal((current) => ({ ...(current ?? values), [name]: value }));
+    setTouched((current) => ({ ...current, [name]: true }));
+  }
+
+  const parsed = parseFormData(fields, toFormData(fields, values));
+  const showAll = Boolean(state?.error);
+  const errors = { ...liveFieldErrors(parsed.errors, touched, showAll) };
+  if (showAll && state?.fieldErrors) {
+    for (const field of fields) {
+      if (field.type === "image" && state.fieldErrors[field.name]) {
+        errors[field.name] = state.fieldErrors[field.name];
+      }
+    }
+  }
 
   return (
     <form action={formAction} key={state?.attempt ?? 0} className="max-w-3xl">
@@ -75,7 +93,14 @@ export function ResourceForm({
               field.name in values ? values[field.name] === "on" : (field.defaultValue ?? false);
             return (
               <Field key={field.name} orientation="horizontal" className={className}>
-                <Checkbox id={field.name} name={field.name} defaultChecked={checked} />
+                <Checkbox
+                  id={field.name}
+                  name={field.name}
+                  checked={checked}
+                  onCheckedChange={(next) =>
+                    setField(field.name, next === true ? "on" : "")
+                  }
+                />
                 <FieldLabel htmlFor={field.name} className="font-normal">
                   {field.label}
                 </FieldLabel>
@@ -97,19 +122,21 @@ export function ResourceForm({
                 <Textarea
                   id={field.name}
                   name={field.name}
-                  defaultValue={values[field.name] ?? ""}
+                  value={values[field.name] ?? ""}
                   placeholder={field.placeholder}
                   maxLength={field.maxLength}
                   aria-invalid={Boolean(error)}
                   className={field.name === "conteudo" ? "min-h-56" : "min-h-24"}
+                  onChange={(event) => setField(field.name, event.target.value)}
                 />
               ) : field.type === "select" || field.type === "reference" ? (
                 <NativeSelect
                   id={field.name}
                   name={field.name}
                   className="w-full"
-                  defaultValue={values[field.name] ?? ""}
+                  value={values[field.name] ?? ""}
                   aria-invalid={Boolean(error)}
+                  onChange={(event) => setField(field.name, event.target.value)}
                 >
                   <NativeSelectOption value="">
                     {field.required ? "Selecione..." : "Nenhum"}
@@ -128,10 +155,11 @@ export function ResourceForm({
                   name={field.name}
                   type={inputTypes[field.type]}
                   inputMode={field.type === "money" ? "decimal" : undefined}
-                  defaultValue={values[field.name] ?? ""}
+                  value={values[field.name] ?? ""}
                   placeholder={field.placeholder}
                   maxLength={field.maxLength}
                   aria-invalid={Boolean(error)}
+                  onChange={(event) => setField(field.name, event.target.value)}
                 />
               )}
               {field.type === "reference" && (options[field.name] ?? []).length === 0 ? (
@@ -146,7 +174,11 @@ export function ResourceForm({
           );
         })}
 
-        {state?.error ? (
+        {state?.error &&
+        !(
+          state.error === "Verifique os campos destacados." &&
+          Object.keys(parsed.errors).length === 0
+        ) ? (
           <Alert variant="destructive" className="sm:col-span-2">
             <AlertDescription>{state.error}</AlertDescription>
           </Alert>
@@ -163,4 +195,18 @@ export function ResourceForm({
       </FieldGroup>
     </form>
   );
+}
+
+function toFormData(fields: readonly FieldDef[], values: FormValues) {
+  const data = new FormData();
+  for (const field of fields) {
+    if (field.type === "image") continue;
+    const value = values[field.name] ?? "";
+    if (field.type === "boolean") {
+      if (value === "on" || value === "true") data.set(field.name, "on");
+      continue;
+    }
+    data.set(field.name, value);
+  }
+  return data;
 }

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
 import { excluirMensagem, marcarMensagemLida } from "@/app/admin/mensagens/actions";
-import { ConfirmButton } from "@/components/admin/confirm-button";
+import { AdminNotice } from "@/components/admin/admin-notice";
+import { ConfirmButton, PendingSubmit } from "@/components/admin/confirm-button";
 import { PageHeading } from "@/components/site-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,9 +25,9 @@ const dateTime = new Intl.DateTimeFormat("pt-BR", {
 export default async function AdminMensagensPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filtro?: string }>;
+  searchParams: Promise<{ filtro?: string; ok?: string; erro?: string }>;
 }) {
-  const { filtro: rawFiltro } = await searchParams;
+  const { filtro: rawFiltro, ok, erro } = await searchParams;
   const filtro = rawFiltro === "nao-lidas" ? "nao-lidas" : "todas";
   const mensagens = await listMensagensAdmin(filtro);
 
@@ -54,6 +55,7 @@ export default async function AdminMensagensPage({
           </Button>
         </div>
       </div>
+      <AdminNotice ok={ok} erro={erro} />
 
       {mensagens.length === 0 ? (
         <p className="text-sm text-muted-foreground">
@@ -110,9 +112,9 @@ export default async function AdminMensagensPage({
                     !mensagem.lida,
                   )}
                 >
-                  <Button type="submit" variant="outline" size="sm">
+                  <PendingSubmit size="sm" pendingLabel="Salvando...">
                     {mensagem.lida ? "Marcar como não lida" : "Marcar como lida"}
-                  </Button>
+                  </PendingSubmit>
                 </form>
                 <ConfirmButton
                   action={excluirMensagem.bind(null, mensagem.id_mensagem)}

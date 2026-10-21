@@ -69,6 +69,20 @@ export function fieldErrorsFrom(error: z.ZodError) {
   return errors;
 }
 
+/** Erros visíveis: o campo que está sendo editado, ou todos depois de um envio. */
+export function liveFieldErrors(
+  all: Record<string, string>,
+  touched: Record<string, boolean>,
+  showAll: boolean,
+) {
+  if (showAll) return all;
+  const visible: Record<string, string> = {};
+  for (const [key, message] of Object.entries(all)) {
+    if (touched[key]) visible[key] = message;
+  }
+  return visible;
+}
+
 export const noticiaStatuses = ["rascunho", "publicado"] as const;
 
 export const noticiaStatusLabel = {

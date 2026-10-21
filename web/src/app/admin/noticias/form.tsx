@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { excluirNoticia, salvarNoticia } from "@/app/admin/noticias/actions";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { ImageField } from "@/components/admin/image-field";
@@ -18,85 +18,137 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
-import { noticiaStatusLabel, noticiaStatuses } from "@/lib/schemas";
 import type { Noticia } from "@/lib/noticias";
+import {
+  fieldErrorsFrom,
+  liveFieldErrors,
+  noticiaSchema,
+  noticiaStatusLabel,
+  noticiaStatuses,
+} from "@/lib/schemas";
 import { getPublicAssetUrl } from "@/lib/storage";
 
 export function NoticiaForm({ noticia }: { noticia?: Noticia }) {
   const [state, action, pending] = useActionState(salvarNoticia, null);
+  const [values, setValues] = useState({
+    titulo: noticia?.titulo ?? "",
+    resumo: noticia?.resumo ?? "",
+    conteudo: noticia?.conteudo ?? "",
+    data_publicacao: noticia?.data_publicacao ?? today(),
+    status: noticia?.status ?? "rascunho",
+  });
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  function change(name: keyof typeof values, value: string) {
+    setValues((current) => ({ ...current, [name]: value }));
+    setTouched((current) => ({ ...current, [name]: true }));
+  }
+
+  const parsed = noticiaSchema.safeParse(values);
+  const allErrors = parsed.success ? {} : fieldErrorsFrom(parsed.error);
+  const errors = liveFieldErrors(allErrors, touched, Boolean(state?.error));
+  const attempt = state?.attempt ?? 0;
+  const [trackedAttempt, setTrackedAttempt] = useState(0);
+  const [serverIsField, setServerIsField] = useState(false);
+  const serverIsFieldNow =
+    attempt === trackedAttempt
+      ? serverIsField
+      : Boolean(state?.error && Object.values(allErrors).includes(state.error));
+  if (attempt !== trackedAttempt) {
+    setTrackedAttempt(attempt);
+    setServerIsField(serverIsFieldNow);
+  }
+  const general = state?.error && !serverIsFieldNow ? state.error : null;
 
   return (
     <div className="max-w-2xl">
       <form action={action}>
         <input type="hidden" name="id_noticia" value={noticia?.id_noticia ?? ""} />
         <FieldGroup>
-        <Field>
-          <FieldLabel htmlFor="titulo">Título</FieldLabel>
-          <Input
-            id="titulo"
-            name="titulo"
-            defaultValue={noticia?.titulo}
-            required
+          <Field data-invalid={Boolean(errors.titulo) || undefined}>
+            <FieldLabel htmlFor="titulo">Título</FieldLabel>
+            <Input
+              id="titulo"
+              name="titulo"
+              value={values.titulo}
+              aria-invalid={Boolean(errors.titulo)}
+              onChange={(event) => change("titulo", event.target.value)}
+              required
+            />
+            {errors.titulo ? <FieldError>{errors.titulo}</FieldError> : null}
+          </Field>
+          <Field data-invalid={Boolean(errors.resumo) || undefined}>
+            <FieldLabel htmlFor="resumo">Resumo</FieldLabel>
+            <Textarea
+              id="resumo"
+              name="resumo"
+              value={values.resumo}
+              aria-invalid={Boolean(errors.resumo)}
+              onChange={(event) => change("resumo", event.target.value)}
+              required
+            />
+            {errors.resumo ? <FieldError>{errors.resumo}</FieldError> : null}
+          </Field>
+          <Field data-invalid={Boolean(errors.conteudo) || undefined}>
+            <FieldLabel htmlFor="conteudo">Conteúdo</FieldLabel>
+            <Textarea
+              id="conteudo"
+              name="conteudo"
+              value={values.conteudo}
+              className="min-h-48"
+              aria-invalid={Boolean(errors.conteudo)}
+              onChange={(event) => change("conteudo", event.target.value)}
+              required
+            />
+            {errors.conteudo ? <FieldError>{errors.conteudo}</FieldError> : null}
+          </Field>
+          <ImageField
+            currentUrl={
+              noticia?.imagem ? getPublicAssetUrl(noticia.imagem) : null
+            }
           />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="resumo">Resumo</FieldLabel>
-          <Textarea
-            id="resumo"
-            name="resumo"
-            defaultValue={noticia?.resumo}
-            required
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="conteudo">Conteúdo</FieldLabel>
-          <Textarea
-            id="conteudo"
-            name="conteudo"
-            defaultValue={noticia?.conteudo}
-            className="min-h-48"
-            required
-          />
-        </Field>
-        <ImageField
-          currentUrl={
-            noticia?.imagem ? getPublicAssetUrl(noticia.imagem) : null
-          }
-        />
-        <Field>
-          <FieldLabel htmlFor="data_publicacao">Data de publicação</FieldLabel>
-          <Input
-            id="data_publicacao"
-            name="data_publicacao"
-            type="date"
-            defaultValue={noticia?.data_publicacao ?? today()}
-            required
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="status">Status</FieldLabel>
-          <NativeSelect
-            id="status"
-            name="status"
-            className="w-full"
-            defaultValue={noticia?.status ?? "rascunho"}
-          >
-            {noticiaStatuses.map((status) => (
-              <NativeSelectOption key={status} value={status}>
-                {noticiaStatusLabel[status]}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </Field>
-        {state?.error ? <FieldError>{state.error}</FieldError> : null}
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={pending}>
-            {pending ? "Salvando..." : "Salvar"}
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/admin/noticias">Cancelar</Link>
-          </Button>
-        </div>
+          <Field data-invalid={Boolean(errors.data_publicacao) || undefined}>
+            <FieldLabel htmlFor="data_publicacao">Data de publicação</FieldLabel>
+            <Input
+              id="data_publicacao"
+              name="data_publicacao"
+              type="date"
+              value={values.data_publicacao}
+              aria-invalid={Boolean(errors.data_publicacao)}
+              onChange={(event) => change("data_publicacao", event.target.value)}
+              required
+            />
+            {errors.data_publicacao ? (
+              <FieldError>{errors.data_publicacao}</FieldError>
+            ) : null}
+          </Field>
+          <Field data-invalid={Boolean(errors.status) || undefined}>
+            <FieldLabel htmlFor="status">Status</FieldLabel>
+            <NativeSelect
+              id="status"
+              name="status"
+              className="w-full"
+              value={values.status}
+              aria-invalid={Boolean(errors.status)}
+              onChange={(event) => change("status", event.target.value)}
+            >
+              {noticiaStatuses.map((status) => (
+                <NativeSelectOption key={status} value={status}>
+                  {noticiaStatusLabel[status]}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+            {errors.status ? <FieldError>{errors.status}</FieldError> : null}
+          </Field>
+          {general ? <FieldError>{general}</FieldError> : null}
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" disabled={pending}>
+              {pending ? "Salvando..." : "Salvar"}
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/admin/noticias">Cancelar</Link>
+            </Button>
+          </div>
         </FieldGroup>
       </form>
       {noticia ? (

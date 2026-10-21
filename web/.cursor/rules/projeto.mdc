@@ -1,0 +1,14 @@
+---
+description: Convenções básicas do Portal Terena
+alwaysApply: true
+---
+
+# Portal Terena
+
+Este é o app Next.js. Não crie outro app na raiz do repositório.
+
+- Reutilize componentes em `src/components`, validação em `src/lib/schemas.ts` e acesso ao banco nas funções de `src/lib`. Não chame o Supabase direto na página se já existe função para isso.
+- Não adicione biblioteca, camada ou abstração para um caso só.
+- Não mude regra de negócio fora do pedido. Altere só o necessário.
+- Textos da interface em português, curtos. Erro de banco ou stack trace não aparece para o visitante.
+- Falha de gravação, exclusão ou login não pode sumir sem aviso. Use `Alert` ou `FieldError`, que já existem.

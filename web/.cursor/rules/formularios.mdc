@@ -1,0 +1,22 @@
+---
+description: Formulários, validação e feedback de cadastro no portal
+globs: src/**/*form*.tsx,src/**/actions.ts,src/components/contact-form.tsx,src/components/admin/**/*.tsx
+alwaysApply: false
+---
+
+# Formulários
+
+Siga o que `ResourceForm` e `ContactForm` já fazem.
+
+- Valide no servidor antes de gravar (Zod ou `parseFormData`). O `required` do HTML não substitui isso.
+- Mostre o erro do campo enquanto a pessoa digita, com a mesma mensagem do schema. Exemplo: "Escreva um resumo com pelo menos 10 caracteres" aparece no resumo assim que o texto fica curto, sem esperar o clique em salvar. Campo ainda intocado fica sem erro. O servidor continua validando no envio.
+- Se a validação ou o Supabase falhar, mantenha o que a pessoa digitou e mostre a mensagem no formulário. Não volte os campos para o valor inicial nem para vazio.
+- Limpe o formulário só depois de um envio bem-sucedido, como no contato.
+- Desative o botão de enviar enquanto `pending` for verdadeiro.
+- Sucesso de salvar ou excluir redireciona para a lista com `?ok=salvo` ou `?ok=excluido`. A lista mostra `AdminNotice`.
+- Falha de exclusão redireciona com `?erro=excluir`, sem `throw` genérico.
+
+```tsx
+// erro: devolve os valores enviados e remonta o form
+return { error: "Não foi possível salvar.", values, attempt }
+```

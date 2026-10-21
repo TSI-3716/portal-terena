@@ -13,7 +13,7 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <form action={action}>
+    <form action={action} key={state?.attempt ?? 0}>
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="email">E-mail</FieldLabel>
@@ -23,6 +23,7 @@ export function LoginForm() {
             type="email"
             autoComplete="email"
             placeholder="seu@email.com"
+            defaultValue={state?.email ?? ""}
             required
           />
         </Field>
@@ -36,6 +37,7 @@ export function LoginForm() {
               autoComplete="current-password"
               placeholder="Sua senha"
               className="pr-9"
+              defaultValue={state?.senha ?? ""}
               required
             />
             <Button

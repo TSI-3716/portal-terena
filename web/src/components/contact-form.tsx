@@ -25,6 +25,7 @@ import {
   contatoAssuntos,
   contatoSchema,
   fieldErrorsFrom,
+  liveFieldErrors,
 } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 
@@ -85,7 +86,9 @@ export function ContactForm({
   className?: string;
 }) {
   const [values, setValues] = useState<Values>(initialValues);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [showAll, setShowAll] = useState(false);
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<
     { kind: "idle" } | { kind: "sent" } | { kind: "error"; message: string }
   >({ kind: "idle" });
@@ -96,33 +99,46 @@ export function ContactForm({
 
   function update<K extends keyof Values>(key: K, value: Values[K]) {
     setValues((current) => ({ ...current, [key]: value }));
+    setTouched((current) => ({ ...current, [key]: true }));
+    setServerErrors({});
   }
+
+  const clientErrors = strategy.validate(values) ?? {};
+  const errors = {
+    ...serverErrors,
+    ...liveFieldErrors(clientErrors, touched, showAll),
+  };
 
   function reset() {
     setValues(initialValues);
-    setErrors({});
+    setTouched({});
+    setShowAll(false);
+    setServerErrors({});
     setStatus({ kind: "idle" });
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setShowAll(true);
     const nextErrors = strategy.validate(values);
 
     if (nextErrors) {
-      setErrors(nextErrors);
       setStatus({ kind: "idle" });
       return;
     }
 
-    setErrors({});
+    setServerErrors({});
     startTransition(async () => {
       const result = await strategy.submit(values);
       if (result.ok) {
         setValues(initialValues);
+        setTouched({});
+        setShowAll(false);
+        setServerErrors({});
         setStatus({ kind: "sent" });
         return;
       }
-      setErrors(result.fieldErrors ?? {});
+      setServerErrors(result.fieldErrors ?? {});
       setStatus({ kind: "error", message: result.message });
     });
   }

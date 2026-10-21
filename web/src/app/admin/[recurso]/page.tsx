@@ -2,20 +2,25 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeading } from "@/components/site-layout";
+import { AdminNotice } from "@/components/admin/admin-notice";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { listRows } from "@/lib/admin/repository";
 import { getResource } from "@/lib/admin/resources";
 
-type Props = { params: Promise<{ recurso: string }> };
+type Props = {
+  params: Promise<{ recurso: string }>;
+  searchParams: Promise<{ ok?: string; erro?: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { recurso } = await params;
   return { title: getResource(recurso)?.title ?? "Administração" };
 }
 
-export default async function AdminRecursoPage({ params }: Props) {
+export default async function AdminRecursoPage({ params, searchParams }: Props) {
   const { recurso } = await params;
+  const { ok, erro } = await searchParams;
   const resource = getResource(recurso);
   if (!resource) notFound();
 
@@ -29,6 +34,7 @@ export default async function AdminRecursoPage({ params }: Props) {
           <Link href={`/admin/${resource.slug}/novo`}>{resource.newLabel}</Link>
         </Button>
       </div>
+      <AdminNotice ok={ok} erro={erro} />
       {rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           Nada cadastrado ainda. Use “{resource.newLabel}” para começar.

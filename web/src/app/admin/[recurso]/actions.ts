@@ -90,7 +90,7 @@ export async function salvarRegistro(
   }
 
   revalidatePath("/", "layout");
-  redirect(`/admin/${slug}`);
+  redirect(`/admin/${slug}?ok=salvo`);
 }
 
 export async function excluirRegistro(slug: string, id: number) {
@@ -120,5 +120,5 @@ export async function excluirRegistro(slug: string, id: number) {
   if (typeof image === "string") await removeImage(supabase, image);
 
   revalidatePath("/", "layout");
-  redirect(`/admin/${slug}`);
+  redirect(`/admin/${slug}?ok=excluido`);
 }
