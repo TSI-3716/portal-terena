@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { staticImage } from "@/lib/images";
 
 export const metadata: Metadata = { title: "Inamaty Kaxé" };
 
@@ -24,6 +25,8 @@ export default function InamatyHomePage() {
         eyebrow="Aldeia"
         title="INAMATY KAXÉ"
         description="Nossa história, território, cultura e o fortalecimento da vida Terena."
+        imageSrc={staticImage("inamaty_hero")}
+        imageAlt="Aldeia Inamaty Kaxé"
       />
       <PageSection contained={false}>
         <SectionHeader
@@ -117,18 +120,24 @@ export default function InamatyHomePage() {
         <div className="grid gap-4 md:grid-cols-3">
           <SiteCard
             title="Notícias da Aldeia"
+            imageSrc={staticImage("noticias_1")}
+            imageAlt="Notícia"
             description="Registros de atividades culturais, educativas e comunitárias."
             href="/aldeias/inamaty-kaxe/noticias"
             hrefLabel="Ver notícias"
           />
           <SiteCard
             title="Juventude Terena"
+            imageSrc={staticImage("juventude_1")}
+            imageAlt="Juventude"
             description="Participação, aprendizagem e fortalecimento da identidade."
             href="/aldeias/inamaty-kaxe/juventude"
             hrefLabel="Conhecer"
           />
           <SiteCard
             title="Produção & Artesanato"
+            imageSrc={staticImage("feira_1")}
+            imageAlt="Artesanato"
             description="Peças, saberes e trabalho artesanal da comunidade."
             href="/aldeias/inamaty-kaxe/artesanato"
             hrefLabel="Conhecer"
