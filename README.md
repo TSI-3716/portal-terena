@@ -130,11 +130,9 @@ npx supabase db push
 
 Ou cole o conteúdo de cada arquivo, em ordem, no **SQL Editor** do painel.
 
-### Autor das notícias (`usuario`)
+### Autor das notícias
 
-`noticia.id_usuario` aponta para a tabela `public.usuario`, que não faz parte do esquema acima. O painel descobre o `id_usuario` comparando o **e-mail do login** (Supabase Auth) com a coluna `email` de `usuario`. Para publicar, cada pessoa que entra no painel precisa ter um registro em `usuario` com o mesmo e-mail. Se a coluna tiver outro nome, ajuste `src/lib/usuario.ts`.
-
-Toda notícia também exige uma **aldeia** e um **evento** relacionados (`id_aldeia` e `id_evento` são obrigatórios no esquema).
+`noticia.id_usuario` é o id de quem está logado no Supabase Auth (`auth.users.id`). E-mail e senha ficam só no Auth. Nome e perfil, que existiam em `public.usuario`, ficam em `raw_user_meta_data`. O formulário pede a aldeia (`id_aldeia`). O evento é opcional.
 
 ### Imagens
 

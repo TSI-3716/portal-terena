@@ -8,6 +8,7 @@ import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -28,7 +29,13 @@ import {
 } from "@/lib/schemas";
 import { getPublicAssetUrl } from "@/lib/storage";
 
-export function NoticiaForm({ noticia }: { noticia?: Noticia }) {
+export function NoticiaForm({
+  noticia,
+  aldeias,
+}: {
+  noticia?: Noticia & { id_aldeia?: number | string | null };
+  aldeias: { id_aldeia: number; nome: string }[];
+}) {
   const [state, action, pending] = useActionState(salvarNoticia, null);
   const [values, setValues] = useState({
     titulo: noticia?.titulo ?? "",
@@ -36,6 +43,7 @@ export function NoticiaForm({ noticia }: { noticia?: Noticia }) {
     conteudo: noticia?.conteudo ?? "",
     data_publicacao: noticia?.data_publicacao ?? today(),
     status: noticia?.status ?? "rascunho",
+    id_aldeia: noticia?.id_aldeia ? String(noticia.id_aldeia) : "",
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -121,6 +129,28 @@ export function NoticiaForm({ noticia }: { noticia?: Noticia }) {
             {errors.data_publicacao ? (
               <FieldError>{errors.data_publicacao}</FieldError>
             ) : null}
+          </Field>
+          <Field data-invalid={Boolean(errors.id_aldeia) || undefined}>
+            <FieldLabel htmlFor="id_aldeia">Aldeia</FieldLabel>
+            <NativeSelect
+              id="id_aldeia"
+              name="id_aldeia"
+              className="w-full"
+              value={values.id_aldeia}
+              aria-invalid={Boolean(errors.id_aldeia)}
+              onChange={(event) => change("id_aldeia", event.target.value)}
+            >
+              <NativeSelectOption value="">Selecione a aldeia</NativeSelectOption>
+              {aldeias.map((aldeia) => (
+                <NativeSelectOption key={aldeia.id_aldeia} value={String(aldeia.id_aldeia)}>
+                  {aldeia.nome}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+            {aldeias.length === 0 ? (
+              <FieldDescription>Nenhuma aldeia cadastrada ainda.</FieldDescription>
+            ) : null}
+            {errors.id_aldeia ? <FieldError>{errors.id_aldeia}</FieldError> : null}
           </Field>
           <Field data-invalid={Boolean(errors.status) || undefined}>
             <FieldLabel htmlFor="status">Status</FieldLabel>

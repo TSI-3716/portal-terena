@@ -62,8 +62,9 @@ export type Noticia = {
   imagem: string | null;
   data_publicacao: string | null;
   status: string | null;
-  id_usuario: number;
-  id_evento: number;
+  /** Id do usuário no Auth (`auth.users.id`). */
+  id_usuario: string;
+  id_evento: number | null;
   id_aldeia: number;
 };
 

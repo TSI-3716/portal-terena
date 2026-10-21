@@ -1,6 +1,6 @@
 -- Esquema de referência do Portal Terena (fornecido pela equipe, sem duplicatas).
 -- As tabelas já existem no projeto Supabase; este arquivo serve de documentação.
--- A tabela public.usuario é referenciada por noticia.id_usuario e não está aqui.
+-- O dono da notícia é o usuário do Auth (auth.users). Nome e perfil ficam em raw_user_meta_data.
 
 create table public.aldeia (
   id_aldeia integer generated always as identity not null,
@@ -79,15 +79,15 @@ create table public.noticia (
   imagem character varying(500) null,
   data_publicacao timestamp without time zone null,
   status character varying(30) null,
-  id_usuario integer not null,
-  id_evento integer not null,
+  id_usuario uuid not null,
+  id_evento integer null,
   id_aldeia integer not null,
   constraint pk_noticia primary key (id_noticia),
   constraint fk_noticia_aldeia foreign key (id_aldeia) references aldeia (id_aldeia)
     on update cascade on delete restrict,
   constraint fk_noticia_evento foreign key (id_evento) references evento (id_evento)
     on update cascade on delete restrict,
-  constraint fk_noticia_usuario foreign key (id_usuario) references usuario (id_usuario)
+  constraint fk_noticia_usuario foreign key (id_usuario) references auth.users (id)
     on update cascade on delete restrict
 );
 create index if not exists idx_noticia_usuario on public.noticia (id_usuario);
