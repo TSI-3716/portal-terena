@@ -4,6 +4,7 @@ import { Hero } from "@/components/hero";
 import { SiteCard } from "@/components/site-card";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Tile } from "@/components/tile";
+import { staticImage } from "@/lib/images";
 
 export const metadata: Metadata = { title: "Cultura Terena" };
 
@@ -14,6 +15,7 @@ export default function CulturaPage() {
         eyebrow="Memória • língua • tradições"
         title="Cultura Terena"
         description="Nossa cultura é viva e se fortalece a cada geração. Conheça memória, história, língua, tradições e calendário cultural."
+        imageSrc={staticImage("cultura_hero")}
       />
       <PageSection>
         <SectionHeader title="Navegue pela Cultura" />
@@ -50,14 +52,20 @@ export default function CulturaPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <SiteCard
             title="Ancião Kadiwéu"
+            imageSrc={staticImage("cultura_1")}
+            imageAlt="Ancião Kadiwéu"
             description="Guardião das histórias e da sabedoria do povo."
           />
           <SiteCard
             title="Dança do Bate-Pau"
+            imageSrc={staticImage("cultura_2")}
+            imageAlt="Dança do Bate-Pau"
             description="Expressão cultural que representa força, união e respeito."
           />
           <SiteCard
             title="Aprenda Terena"
+            imageSrc={staticImage("cultura_3")}
+            imageAlt="Aprenda Terena"
             description="Palavras e expressões para fortalecer nossa língua."
           />
         </div>

@@ -24,3 +24,12 @@ export const inamatyLinks = [
   { href: "/aldeias/inamaty-kaxe/galeria", label: "Galeria" },
   { href: "/aldeias/inamaty-kaxe/contato", label: "Contato" },
 ] as const;
+
+export const inamatyFooterLinks = [
+  { href: "/aldeias/inamaty-kaxe", label: "Início" },
+  { href: "/aldeias/inamaty-kaxe/historia", label: "História" },
+  { href: "/aldeias/inamaty-kaxe/cultura", label: "Cultura" },
+  { href: "/aldeias/inamaty-kaxe/juventude", label: "Juventude" },
+  { href: "/aldeias/inamaty-kaxe/galeria", label: "Galeria" },
+  { href: "/aldeias/inamaty-kaxe/contato", label: "Contato" },
+] as const;

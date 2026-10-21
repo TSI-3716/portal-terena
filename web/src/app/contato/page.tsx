@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { staticImage } from "@/lib/images";
 
 export const metadata: Metadata = { title: "Contato" };
 
@@ -21,6 +22,7 @@ export default function ContatoPage() {
         eyebrow="Estamos aqui para ouvir você"
         title="Contato"
         description="Sua opinião, sugestão ou participação é muito importante para construirmos juntos um portal cada vez mais forte para o povo Terena."
+        imageSrc={staticImage("contato_hero")}
       />
       <PageSection>
         <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">

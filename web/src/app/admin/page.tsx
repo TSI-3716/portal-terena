@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeading } from "@/components/site-layout";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardDescription,
@@ -7,8 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { adminSections } from "@/lib/admin";
+import { contarMensagensNaoLidas } from "@/lib/contato";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const naoLidas = await contarMensagensNaoLidas();
+
   return (
     <>
       <PageHeading
@@ -20,7 +24,14 @@ export default function AdminPage() {
           <Link key={section.href} href={section.href} className="block">
             <Card className="h-full transition-colors hover:bg-muted/40">
               <CardHeader>
-                <CardTitle className="text-primary">{section.title}</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  {section.title}
+                  {section.href === "/admin/mensagens" && naoLidas > 0 ? (
+                    <Badge>
+                      {naoLidas} {naoLidas === 1 ? "nova" : "novas"}
+                    </Badge>
+                  ) : null}
+                </CardTitle>
                 <CardDescription>{section.description}</CardDescription>
               </CardHeader>
             </Card>

@@ -21,6 +21,21 @@ export function getPublicAssetUrl(
   return `${base.replace(/\/$/, "")}/storage/v1/object/public/${bucket}/${cleaned}`;
 }
 
+/**
+ * Resolve o valor da coluna "imagem" para uma URL exibível:
+ * - URL completa (http/https) é usada como está;
+ * - caminho começando com "/" aponta para web/public (imagens do protótipo);
+ * - qualquer outro valor é um caminho dentro do bucket "assets".
+ */
+export function resolveImageUrl(value: string | null | undefined) {
+  const path = value?.trim();
+  if (!path) return undefined;
+  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("/")) {
+    return path;
+  }
+  return getPublicAssetUrl(path);
+}
+
 export function readImageFile(formData: FormData, field = "imagem") {
   const value = formData.get(field);
   if (!(value instanceof File) || value.size === 0) return null;

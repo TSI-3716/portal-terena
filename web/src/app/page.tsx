@@ -5,6 +5,7 @@ import { SiteCard } from "@/components/site-card";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
 import { VillageMap } from "@/components/village-map";
+import { staticImage } from "@/lib/images";
 import { listNoticiasPublicas } from "@/lib/noticias";
 
 export default async function HomePage() {
@@ -65,6 +66,8 @@ export default async function HomePage() {
           <SiteCard
             search="dança bate pau cultura"
             title="Dança do Bate-Pau"
+            imageSrc={staticImage("cultura_2")}
+            imageAlt="Dança do Bate-Pau"
             description="Expressão cultural que representa força, união e respeito."
             href="/cultura"
             hrefLabel="Ver mais"
@@ -72,6 +75,8 @@ export default async function HomePage() {
           <SiteCard
             search="juventude terena ação"
             title="Juventude Terena"
+            imageSrc={staticImage("juventude_1")}
+            imageAlt="Juventude Terena"
             description="Protagonismo, aprendizado, participação e transformação."
             href="/juventude"
             hrefLabel="Conheça"
@@ -79,6 +84,8 @@ export default async function HomePage() {
           <SiteCard
             search="artesanato terena"
             title="Feira & Artesanato"
+            imageSrc={staticImage("feira_p1")}
+            imageAlt="Feira e artesanato"
             description="Valorize o trabalho das artesãs e artesãos Terena."
             href="/feira"
             hrefLabel="Conheça"
