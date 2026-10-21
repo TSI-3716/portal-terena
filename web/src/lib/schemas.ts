@@ -108,6 +108,7 @@ export const noticiaSchema = z.object({
       value === "rascunho" || value === "publicado",
     { message: "Selecione o status" },
   ),
+  id_aldeia: z.string().regex(/^[1-9]\d*$/, "Selecione a aldeia"),
 });
 
 export type NoticiaInput = z.infer<typeof noticiaSchema>;

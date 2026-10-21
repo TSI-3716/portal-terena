@@ -5,6 +5,11 @@ import { createClient } from "@/lib/supabase";
 
 export const NOTICIA_IMAGE_FOLDER = "noticias";
 
+/** A tabela atual usa id inteiro. Uma migration antiga usava uuid. */
+export function isNoticiaId(id: string) {
+  return z.uuid().safeParse(id).success || /^[1-9]\d*$/.test(id);
+}
+
 export type Noticia = NoticiaInput & {
   id_noticia: string;
   imagem: string | null;
@@ -33,7 +38,7 @@ export async function listNoticiasPublicas(busca = "", limit?: number) {
 }
 
 export async function getNoticiaPublica(id: string) {
-  if (!z.uuid().safeParse(id).success) return null;
+  if (!isNoticiaId(id)) return null;
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -59,7 +64,7 @@ export async function listNoticiasAdmin() {
 }
 
 export async function getNoticiaAdmin(id: string) {
-  if (!z.uuid().safeParse(id).success) return null;
+  if (!isNoticiaId(id)) return null;
 
   const { supabase } = await requireUser();
   const { data, error } = await supabase
