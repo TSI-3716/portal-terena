@@ -8,33 +8,46 @@ import { NOTICIA_IMAGE_FOLDER } from "@/lib/noticias";
 import { noticiaSchema } from "@/lib/schemas";
 import { readImageFile, removeImage, uploadImage, validateImageFile } from "@/lib/storage";
 
+type NoticiaFormState = {
+  error: string;
+  values: Record<string, string>;
+  attempt: number;
+};
+
+function noticiaValues(formData: FormData) {
+  return {
+    titulo: String(formData.get("titulo") ?? ""),
+    resumo: String(formData.get("resumo") ?? ""),
+    conteudo: String(formData.get("conteudo") ?? ""),
+    data_publicacao: String(formData.get("data_publicacao") ?? ""),
+    status: String(formData.get("status") ?? ""),
+  };
+}
+
 export async function salvarNoticia(
-  _prev: { error: string } | null,
+  prev: NoticiaFormState | null,
   formData: FormData,
 ) {
+  const values = noticiaValues(formData);
+  const attempt = (prev?.attempt ?? 0) + 1;
+  const fail = (error: string) => ({ error, values, attempt });
   const { supabase } = await requireUser();
-  const parsed = noticiaSchema.safeParse({
-    titulo: formData.get("titulo"),
-    resumo: formData.get("resumo"),
-    conteudo: formData.get("conteudo"),
-    data_publicacao: formData.get("data_publicacao"),
-    status: formData.get("status"),
-  });
+  const parsed = noticiaSchema.safeParse(values);
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Verifique os campos." };
+    return fail(parsed.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   const rawId = String(formData.get("id_noticia") ?? "");
   const id = rawId ? z.uuid().safeParse(rawId) : null;
   if (rawId && !id?.success) {
-    return { error: "Notícia inválida." };
+    return fail("Notícia inválida.");
   }
 
   const file = readImageFile(formData);
   if (file) {
     const imageError = validateImageFile(file);
-    if (imageError) return { error: imageError };
+    if (imageError) return fail(imageError);
   }
 
   let uploaded: string | null = null;
@@ -76,19 +89,19 @@ export async function salvarNoticia(
     }
   } catch {
     if (uploaded) await removeImage(supabase, uploaded);
-    return { error: "Não foi possível salvar a notícia." };
+    return fail("Não foi possível salvar a notícia.");
   }
 
   revalidatePath("/");
   revalidatePath("/noticias");
   revalidatePath("/noticias/[id]", "page");
   revalidatePath("/admin/noticias");
-  redirect("/admin/noticias");
+  redirect("/admin/noticias?ok=salvo");
 }
 
 export async function excluirNoticia(id: string) {
   const parsed = z.uuid().safeParse(id);
-  if (!parsed.success) redirect("/admin/noticias");
+  if (!parsed.success) redirect("/admin/noticias?erro=excluir");
 
   const { supabase } = await requireUser();
   const { data } = await supabase
@@ -103,7 +116,7 @@ export async function excluirNoticia(id: string) {
     .eq("id_noticia", parsed.data);
 
   if (error) {
-    throw new Error("Não foi possível excluir a notícia.");
+    redirect("/admin/noticias?erro=excluir");
   }
 
   if (data?.imagem) {
@@ -114,5 +127,5 @@ export async function excluirNoticia(id: string) {
   revalidatePath("/noticias");
   revalidatePath("/noticias/[id]", "page");
   revalidatePath("/admin/noticias");
-  redirect("/admin/noticias");
+  redirect("/admin/noticias?ok=excluido");
 }

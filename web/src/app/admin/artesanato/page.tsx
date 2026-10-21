@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeading } from "@/components/site-layout";
+import { AdminNotice } from "@/components/admin/admin-notice";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { listArtesanatosAdmin } from "@/lib/artesanato";
 
 export const metadata: Metadata = { title: "Artesanato" };
 
-export default async function AdminArtesanatoPage() {
+export default async function AdminArtesanatoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ok?: string; erro?: string }>;
+}) {
+  const { ok, erro } = await searchParams;
   const artesanatos = await listArtesanatosAdmin();
 
   return (
@@ -21,6 +27,7 @@ export default async function AdminArtesanatoPage() {
           <Link href="/admin/artesanato/novo">Novo artesanato</Link>
         </Button>
       </div>
+      <AdminNotice ok={ok} erro={erro} />
       {artesanatos.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           Nenhum artesanato cadastrado.

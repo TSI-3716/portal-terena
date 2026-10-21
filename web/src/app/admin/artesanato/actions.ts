@@ -8,33 +8,52 @@ import { ARTESANATO_IMAGE_FOLDER } from "@/lib/artesanato";
 import { artesanatoSchema } from "@/lib/schemas";
 import { readImageFile, removeImage, uploadImage, validateImageFile } from "@/lib/storage";
 
+type ArtesanatoFormState = {
+  error: string;
+  values: Record<string, string>;
+  attempt: number;
+};
+
+function artesanatoValues(formData: FormData) {
+  return {
+    nome: String(formData.get("nome") ?? ""),
+    descricao: String(formData.get("descricao") ?? ""),
+    categoria: String(formData.get("categoria") ?? ""),
+    preco: String(formData.get("preco") ?? ""),
+    disponivel: String(formData.get("disponivel") ?? ""),
+  };
+}
+
 export async function salvarArtesanato(
-  _prev: { error: string } | null,
+  prev: ArtesanatoFormState | null,
   formData: FormData,
 ) {
+  const values = artesanatoValues(formData);
+  const attempt = (prev?.attempt ?? 0) + 1;
+  const fail = (error: string) => ({ error, values, attempt });
   const { supabase } = await requireUser();
   const parsed = artesanatoSchema.safeParse({
-    nome: formData.get("nome"),
-    descricao: formData.get("descricao"),
-    categoria: formData.get("categoria"),
-    preco: formData.get("preco"),
-    disponivel: formData.get("disponivel") === "true",
+    nome: values.nome,
+    descricao: values.descricao,
+    categoria: values.categoria,
+    preco: values.preco,
+    disponivel: values.disponivel === "true",
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Verifique os campos." };
+    return fail(parsed.error.issues[0]?.message ?? "Verifique os campos.");
   }
 
   const rawId = String(formData.get("id_artesanato") ?? "");
   const id = rawId ? z.uuid().safeParse(rawId) : null;
   if (rawId && !id?.success) {
-    return { error: "Artesanato inválido." };
+    return fail("Artesanato inválido.");
   }
 
   const file = readImageFile(formData);
   if (file) {
     const imageError = validateImageFile(file);
-    if (imageError) return { error: imageError };
+    if (imageError) return fail(imageError);
   }
 
   let uploaded: string | null = null;
@@ -76,18 +95,18 @@ export async function salvarArtesanato(
     }
   } catch {
     if (uploaded) await removeImage(supabase, uploaded);
-    return { error: "Não foi possível salvar o artesanato." };
+    return fail("Não foi possível salvar o artesanato.");
   }
 
   revalidatePath("/artesanato");
   revalidatePath("/artesanato/[id]", "page");
   revalidatePath("/admin/artesanato");
-  redirect("/admin/artesanato");
+  redirect("/admin/artesanato?ok=salvo");
 }
 
 export async function excluirArtesanato(id: string) {
   const parsed = z.uuid().safeParse(id);
-  if (!parsed.success) redirect("/admin/artesanato");
+  if (!parsed.success) redirect("/admin/artesanato?erro=excluir");
 
   const { supabase } = await requireUser();
   const { data } = await supabase
@@ -102,7 +121,7 @@ export async function excluirArtesanato(id: string) {
     .eq("id_artesanato", parsed.data);
 
   if (error) {
-    throw new Error("Não foi possível excluir o artesanato.");
+    redirect("/admin/artesanato?erro=excluir");
   }
 
   if (data?.imagem) {
@@ -112,5 +131,5 @@ export async function excluirArtesanato(id: string) {
   revalidatePath("/artesanato");
   revalidatePath("/artesanato/[id]", "page");
   revalidatePath("/admin/artesanato");
-  redirect("/admin/artesanato");
+  redirect("/admin/artesanato?ok=excluido");
 }
