@@ -1,5 +1,10 @@
+"use client"
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { randomBytes } from "crypto";
+import { LatLngExpression } from "leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 export function VillageMap({
   places,
@@ -8,25 +13,22 @@ export function VillageMap({
   places: string[];
   className?: string;
 }) {
+  const position: LatLngExpression = [51.505, -0.09]
+
   return (
-    <div
-      className={cn(
-        "relative min-h-[320px] overflow-hidden rounded-xl border bg-accent",
-        className
-      )}
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-accent via-secondary to-accent" />
-      <div className="relative flex min-h-[320px] flex-wrap items-center justify-around gap-3 p-6">
-        {places.map((place) => (
-          <Badge
-            key={place}
-            variant="outline"
-            className="h-auto border-primary bg-background px-3 py-1.5 text-sm text-primary"
-          >
-            {place}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  );
+    <MapContainer className={cn(
+      "min-h-[320px] rounded-xl border",
+      className
+    )} center={position} zoom={13} scrollWheelZoom={false}>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Marker position={position}>
+        <Popup>
+          A pretty CSS3 popup. <br /> Easily customizable.
+        </Popup>
+      </Marker>
+    </MapContainer>
+  )
 }

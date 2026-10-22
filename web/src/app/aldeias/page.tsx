@@ -29,9 +29,9 @@ export default function AldeiasPage() {
 
       <PageSection>
         <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
-          <VillageMap
+          {/* <VillageMap
             places={["Aquidauana", "Miranda", "Nioaque", "Campo Grande"]}
-          />
+          /> */}
           <Card>
             <CardHeader>
               <CardTitle className="text-primary">Filtre no mapa</CardTitle>

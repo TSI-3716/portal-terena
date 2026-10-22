@@ -4,7 +4,7 @@ import { NoticiaList } from "@/components/noticia-list";
 import { SiteCard } from "@/components/site-card";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
-import { VillageMap } from "@/components/village-map";
+import { VillageMap } from "@/components/village-map-client";
 import { listNoticiasPublicas } from "@/lib/noticias";
 
 export default async function HomePage() {
