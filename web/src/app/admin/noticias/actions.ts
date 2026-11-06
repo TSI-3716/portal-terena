@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { describeDbError, logDbError } from "@/lib/db-error";
+import { describeDbError } from "@/lib/db-error";
+import { registrarErroDb } from "@/lib/log-erro";
 import { isNoticiaId, NOTICIA_IMAGE_FOLDER } from "@/lib/noticias";
 import { noticiaSchema } from "@/lib/schemas";
 import { readImageFile, removeImage, uploadImage, validateImageFile } from "@/lib/storage";
@@ -95,7 +96,10 @@ export async function salvarNoticia(
     }
   } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
-    logDbError(`salvar noticia${id ? ` #${id}` : ""}`, error);
+    await registrarErroDb(`salvar noticia${id ? ` #${id}` : ""}`, error, {
+      tabela: "noticia",
+      registroId: id,
+    });
     return fail(describeDbError(error, "salvar a notícia"));
   }
 
@@ -122,7 +126,10 @@ export async function excluirNoticia(id: string) {
     .eq("id_noticia", id);
 
   if (error) {
-    logDbError(`excluir noticia #${id}`, error);
+    await registrarErroDb(`excluir noticia #${id}`, error, {
+      tabela: "noticia",
+      registroId: id,
+    });
     redirect("/admin/noticias?erro=excluir");
   }
 
