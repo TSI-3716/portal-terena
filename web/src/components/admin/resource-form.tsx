@@ -30,6 +30,7 @@ const inputTypes = {
   text: "text",
   email: "email",
   tel: "tel",
+  url: "url",
   date: "date",
   datetime: "datetime-local",
   money: "text",
