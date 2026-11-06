@@ -5,8 +5,16 @@ import { createClient } from "@/lib/supabase";
 
 export const ARTESANATO_IMAGE_FOLDER = "artesanato";
 
+/**
+ * No banco atual id_artesanato é integer (identity). Uma migration antiga
+ * criava uuid, então os dois formatos são aceitos, como em notícias.
+ */
+export function isArtesanatoId(id: string) {
+  return /^[1-9]\d*$/.test(id) || z.uuid().safeParse(id).success;
+}
+
 export type Artesanato = ArtesanatoInput & {
-  id_artesanato: string;
+  id_artesanato: number | string;
   imagem: string | null;
 };
 
@@ -26,7 +34,7 @@ export async function listArtesanatosPublicos() {
 }
 
 export async function getArtesanatoPublico(id: string) {
-  if (!z.uuid().safeParse(id).success) return null;
+  if (!isArtesanatoId(id)) return null;
 
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -52,7 +60,7 @@ export async function listArtesanatosAdmin() {
 }
 
 export async function getArtesanatoAdmin(id: string) {
-  if (!z.uuid().safeParse(id).success) return null;
+  if (!isArtesanatoId(id)) return null;
 
   const { supabase } = await requireUser();
   const { data, error } = await supabase
