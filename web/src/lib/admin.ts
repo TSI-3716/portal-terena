@@ -45,4 +45,14 @@ export const adminSections = [
     title: "Tipos de conteúdo",
     description: "Classificação geral dos conteúdos do portal.",
   },
+  {
+    href: "/admin/configuracoes",
+    title: "Configurações",
+    description: "E-mail, telefone, endereço e redes sociais do rodapé e da página de contato.",
+  },
+  {
+    href: "/admin/logs",
+    title: "Logs e auditoria",
+    description: "Quem incluiu, alterou ou excluiu cada registro, erros e acessos ao painel.",
+  },
 ] as const;

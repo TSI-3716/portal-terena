@@ -6,7 +6,8 @@ import type { ResourceFormState } from "@/lib/admin/fields";
 import { parseFormData } from "@/lib/admin/parse";
 import { getResource } from "@/lib/admin/resources";
 import { requireUser } from "@/lib/auth";
-import { dbErrorCode, describeDbError, logDbError } from "@/lib/db-error";
+import { dbErrorCode, describeDbError } from "@/lib/db-error";
+import { registrarErroDb } from "@/lib/log-erro";
 import {
   readImageFile,
   removeImage,
@@ -76,7 +77,10 @@ export async function salvarRegistro(
     }
   } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
-    logDbError(`salvar ${resource.table}${id !== null ? ` #${id}` : ""}`, error);
+    await registrarErroDb(`salvar ${resource.table}${id !== null ? ` #${id}` : ""}`, error, {
+      tabela: resource.table,
+      registroId: id,
+    });
     return { error: describeDbError(error), fieldErrors: {}, values, attempt };
   }
 
@@ -103,7 +107,10 @@ export async function excluirRegistro(slug: string, id: number) {
     .eq(resource.idColumn, id);
 
   if (error) {
-    logDbError(`excluir ${resource.table} #${id}`, error);
+    await registrarErroDb(`excluir ${resource.table} #${id}`, error, {
+      tabela: resource.table,
+      registroId: id,
+    });
     const motivo = dbErrorCode(error) === "23503" ? "em-uso" : "falha";
     redirect(`/admin/${slug}/${id}?erro=${motivo}`);
   }
