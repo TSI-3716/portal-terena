@@ -113,3 +113,39 @@ CREATE TABLE public.mensagem_contato (
   criado_em timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT mensagem_contato_pkey PRIMARY KEY (id_mensagem)
 );
+-- Criadas por migrations/20261107120000_configuracao_e_auditoria.sql ----------
+CREATE TABLE public.configuracao (
+  id smallint NOT NULL DEFAULT 1 CHECK (id = 1),
+  email_contato character varying,
+  telefone character varying,
+  whatsapp character varying,
+  endereco character varying,
+  cidade_uf character varying,
+  horario_atendimento character varying,
+  prazo_resposta character varying,
+  instagram_url character varying,
+  facebook_url character varying,
+  youtube_url character varying,
+  atualizado_em timestamp with time zone NOT NULL DEFAULT now(),
+  atualizado_por uuid REFERENCES auth.users(id),
+  CONSTRAINT configuracao_pkey PRIMARY KEY (id)
+);
+-- Somente leitura pela API; gravado pelo trigger auditar_alteracao() e pela função registrar_log().
+CREATE TABLE public.log_sistema (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  criado_em timestamp with time zone NOT NULL DEFAULT now(),
+  tipo text NOT NULL CHECK (tipo IN ('insert','update','delete','erro','login','login_falha','logout')),
+  nivel text NOT NULL DEFAULT 'info' CHECK (nivel IN ('info','aviso','erro')),
+  origem text NOT NULL DEFAULT 'app' CHECK (origem IN ('banco','app','auth')),
+  tabela text,
+  registro_id text,
+  usuario_id uuid,
+  usuario_email text,
+  mensagem text,
+  dados_antes jsonb,
+  dados_depois jsonb,
+  campos_alterados text[],
+  detalhes jsonb,
+  rota text,
+  CONSTRAINT log_sistema_pkey PRIMARY KEY (id)
+);
