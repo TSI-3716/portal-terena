@@ -23,8 +23,8 @@ export type ContatoAldeia = {
 };
 
 export type Artesanato = {
-  /** Na base atual do portal o id é uuid, gerado pelo cadastro de artesanato. */
-  id_artesanato: string;
+  /** integer (identity) no banco atual; bases antigas usavam uuid. */
+  id_artesanato: number | string;
   nome: string;
   descricao: string | null;
   categoria: string | null;

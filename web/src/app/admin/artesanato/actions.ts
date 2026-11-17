@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 import { requireUser } from "@/lib/auth";
-import { ARTESANATO_IMAGE_FOLDER } from "@/lib/artesanato";
+import { ARTESANATO_IMAGE_FOLDER, isArtesanatoId } from "@/lib/artesanato";
+import { describeDbError, logDbError } from "@/lib/db-error";
 import { artesanatoSchema } from "@/lib/schemas";
 import { readImageFile, removeImage, uploadImage, validateImageFile } from "@/lib/storage";
 
@@ -45,8 +45,8 @@ export async function salvarArtesanato(
   }
 
   const rawId = String(formData.get("id_artesanato") ?? "");
-  const id = rawId ? z.uuid().safeParse(rawId) : null;
-  if (rawId && !id?.success) {
+  const id = rawId && isArtesanatoId(rawId) ? rawId : null;
+  if (rawId && !id) {
     return fail("Artesanato inválido.");
   }
 
@@ -68,11 +68,11 @@ export async function salvarArtesanato(
       ...(uploaded ? { imagem: uploaded } : {}),
     };
 
-    if (id?.success) {
+    if (id) {
       const { data: current, error: currentError } = await supabase
         .from("artesanato")
         .select("imagem")
-        .eq("id_artesanato", id.data)
+        .eq("id_artesanato", id)
         .maybeSingle();
 
       if (currentError || !current) {
@@ -82,20 +82,21 @@ export async function salvarArtesanato(
       const { error } = await supabase
         .from("artesanato")
         .update(payload)
-        .eq("id_artesanato", id.data);
+        .eq("id_artesanato", id);
 
-      if (error) throw new Error(error.message);
+      if (error) throw error;
 
       if (uploaded && current.imagem && current.imagem !== uploaded) {
         await removeImage(supabase, current.imagem);
       }
     } else {
       const { error } = await supabase.from("artesanato").insert(payload);
-      if (error) throw new Error(error.message);
+      if (error) throw error;
     }
-  } catch {
+  } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
-    return fail("Não foi possível salvar o artesanato.");
+    logDbError(`salvar artesanato${id ? ` #${id}` : ""}`, error);
+    return fail(describeDbError(error, "salvar o artesanato"));
   }
 
   revalidatePath("/artesanato");
@@ -104,23 +105,24 @@ export async function salvarArtesanato(
   redirect("/admin/artesanato?ok=salvo");
 }
 
-export async function excluirArtesanato(id: string) {
-  const parsed = z.uuid().safeParse(id);
-  if (!parsed.success) redirect("/admin/artesanato?erro=excluir");
+export async function excluirArtesanato(rawId: number | string) {
+  const id = String(rawId);
+  if (!isArtesanatoId(id)) redirect("/admin/artesanato?erro=excluir");
 
   const { supabase } = await requireUser();
   const { data } = await supabase
     .from("artesanato")
     .select("imagem")
-    .eq("id_artesanato", parsed.data)
+    .eq("id_artesanato", id)
     .maybeSingle();
 
   const { error } = await supabase
     .from("artesanato")
     .delete()
-    .eq("id_artesanato", parsed.data);
+    .eq("id_artesanato", id);
 
   if (error) {
+    logDbError(`excluir artesanato #${id}`, error);
     redirect("/admin/artesanato?erro=excluir");
   }
 

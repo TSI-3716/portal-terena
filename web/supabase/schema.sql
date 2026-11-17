@@ -1,117 +1,115 @@
--- Esquema de referência do Portal Terena (fornecido pela equipe, sem duplicatas).
--- As tabelas já existem no projeto Supabase; este arquivo serve de documentação.
--- O dono da notícia é o usuário do Auth (auth.users). Nome e perfil ficam em raw_user_meta_data.
+-- Esquema de referência do Portal Terena: estrutura atual do banco Supabase
+-- (exportada pela equipe em 06/11/2026). Serve de documentação; não execute.
+-- noticia.id_usuario é o usuário do Auth (auth.users.id).
+-- projeto e artesanato não têm coluna id_aldeia; projeto se liga a aldeia por projeto_aldeia.
 
-create table public.aldeia (
-  id_aldeia integer generated always as identity not null,
-  nome character varying(150) not null,
-  descricao text null,
-  localizacao character varying(255) null,
-  imagem character varying(500) null,
-  data_fundacao date null,
-  constraint pk_aldeia primary key (id_aldeia)
+CREATE TABLE public.evento (
+  id_evento integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  titulo character varying NOT NULL,
+  descricao text,
+  data_evento date,
+  local character varying,
+  imagem character varying,
+  status character varying,
+  CONSTRAINT evento_pkey PRIMARY KEY (id_evento)
 );
-
-create table public.artesanato (
-  id_artesanato integer generated always as identity not null,
-  nome character varying(200) not null,
-  descricao text null,
-  categoria character varying(100) null,
-  imagem character varying(500) null,
-  preco numeric(12, 2) null,
-  disponivel boolean not null default true,
-  constraint pk_artesanato primary key (id_artesanato)
+CREATE TABLE public.aldeia (
+  id_aldeia integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  nome character varying NOT NULL,
+  descricao text,
+  localizacao character varying,
+  imagem character varying,
+  data_fundacao date,
+  CONSTRAINT aldeia_pkey PRIMARY KEY (id_aldeia)
 );
-
-create table public.contato_aldeia (
-  id_contato integer generated always as identity not null,
-  telefone character varying(30) null,
-  email character varying(150) null,
-  endereco character varying(255) null,
-  horario_atendimento character varying(150) null,
-  observacao text null,
-  id_aldeia integer not null,
-  constraint pk_contato_aldeia primary key (id_contato),
-  constraint fk_contato_aldeia foreign key (id_aldeia) references aldeia (id_aldeia)
-    on update cascade on delete cascade
+CREATE TABLE public.tipo_conteudo (
+  id_tipo integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  nome character varying NOT NULL UNIQUE,
+  descricao text,
+  CONSTRAINT tipo_conteudo_pkey PRIMARY KEY (id_tipo)
 );
-create index if not exists idx_contato_aldeia on public.contato_aldeia (id_aldeia);
-
-create table public.evento (
-  id_evento integer generated always as identity not null,
-  titulo character varying(200) not null,
-  descricao text null,
-  data_evento date null,
-  local character varying(200) null,
-  imagem character varying(500) null,
-  status character varying(30) null,
-  constraint pk_evento primary key (id_evento)
+CREATE TABLE public.conteudo_aldeia (
+  id_conteudo integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  titulo character varying NOT NULL,
+  descricao text,
+  tipo character varying,
+  imagem character varying,
+  data_publicacao date,
+  destaque boolean NOT NULL DEFAULT false,
+  id_tipo integer NOT NULL,
+  id_aldeia integer NOT NULL,
+  CONSTRAINT conteudo_aldeia_pkey PRIMARY KEY (id_conteudo),
+  CONSTRAINT fk_conteudo_aldeia FOREIGN KEY (id_aldeia) REFERENCES public.aldeia(id_aldeia),
+  CONSTRAINT fk_conteudo_tipo FOREIGN KEY (id_tipo) REFERENCES public.tipo_conteudo(id_tipo)
 );
-
-create table public.mensagem_contato (
-  id_mensagem uuid not null default gen_random_uuid(),
-  origem text not null default 'portal',
-  nome text not null,
-  email text not null,
-  telefone text null,
-  assunto text not null,
-  mensagem text not null,
-  autorizacao boolean not null default false,
-  lida boolean not null default false,
-  criado_em timestamp with time zone not null default now(),
-  constraint mensagem_contato_pkey primary key (id_mensagem),
-  constraint mensagem_contato_origem_check check (origem in ('portal', 'inamaty-kaxe')),
-  constraint mensagem_contato_tamanhos_check check (
-    char_length(nome) between 3 and 120
-    and char_length(email) between 3 and 254
-    and char_length(coalesce(telefone, '')) <= 30
-    and char_length(assunto) between 1 and 150
-    and char_length(mensagem) between 10 and 5000
-  )
+CREATE TABLE public.artesanato (
+  id_artesanato integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  nome character varying NOT NULL,
+  descricao text,
+  categoria character varying,
+  imagem character varying,
+  preco numeric,
+  disponivel boolean NOT NULL DEFAULT true,
+  CONSTRAINT artesanato_pkey PRIMARY KEY (id_artesanato)
 );
-create index if not exists mensagem_contato_criado_idx on public.mensagem_contato (criado_em desc);
-
-create table public.noticia (
-  id_noticia integer generated always as identity not null,
-  titulo character varying(250) not null,
-  resumo text null,
-  conteudo text null,
-  imagem character varying(500) null,
-  data_publicacao timestamp without time zone null,
-  status character varying(30) null,
-  id_usuario uuid not null,
-  id_evento integer null,
-  id_aldeia integer not null,
-  constraint pk_noticia primary key (id_noticia),
-  constraint fk_noticia_aldeia foreign key (id_aldeia) references aldeia (id_aldeia)
-    on update cascade on delete restrict,
-  constraint fk_noticia_evento foreign key (id_evento) references evento (id_evento)
-    on update cascade on delete restrict,
-  constraint fk_noticia_usuario foreign key (id_usuario) references auth.users (id)
-    on update cascade on delete restrict
+CREATE TABLE public.noticia (
+  id_noticia integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  titulo character varying NOT NULL,
+  resumo text,
+  conteudo text,
+  imagem character varying,
+  data_publicacao timestamp without time zone,
+  status character varying,
+  id_evento integer,
+  id_aldeia integer NOT NULL,
+  id_usuario uuid NOT NULL,
+  CONSTRAINT noticia_pkey PRIMARY KEY (id_noticia),
+  CONSTRAINT fk_noticia_evento FOREIGN KEY (id_evento) REFERENCES public.evento(id_evento),
+  CONSTRAINT fk_noticia_aldeia FOREIGN KEY (id_aldeia) REFERENCES public.aldeia(id_aldeia),
+  CONSTRAINT fk_noticia_usuario FOREIGN KEY (id_usuario) REFERENCES auth.users(id)
 );
-create index if not exists idx_noticia_usuario on public.noticia (id_usuario);
-create index if not exists idx_noticia_evento on public.noticia (id_evento);
-create index if not exists idx_noticia_aldeia on public.noticia (id_aldeia);
-create index if not exists noticia_publicadas_idx on public.noticia (data_publicacao desc)
-  where ((status)::text = 'publicado'::text);
-
-create table public.projeto (
-  id_projeto integer generated always as identity not null,
-  titulo character varying(200) not null,
-  descricao text null,
-  objetivo text null,
-  data_inicio date null,
-  data_fim date null,
-  status character varying(50) null,
-  imagem character varying(500) null,
-  constraint pk_projeto primary key (id_projeto)
+CREATE TABLE public.contato_aldeia (
+  id_contato integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  telefone character varying,
+  email character varying,
+  endereco character varying,
+  horario_atendimento character varying,
+  observacao text,
+  id_aldeia integer NOT NULL,
+  CONSTRAINT contato_aldeia_pkey PRIMARY KEY (id_contato),
+  CONSTRAINT fk_contato_aldeia FOREIGN KEY (id_aldeia) REFERENCES public.aldeia(id_aldeia)
 );
-
-create table public.tipo_conteudo (
-  id_tipo integer generated always as identity not null,
-  nome character varying(100) not null,
-  descricao text null,
-  constraint pk_tipo_conteudo primary key (id_tipo),
-  constraint uq_tipo_conteudo_nome unique (nome)
+CREATE TABLE public.projeto (
+  id_projeto integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  titulo character varying NOT NULL,
+  descricao text,
+  objetivo text,
+  data_inicio date,
+  data_fim date,
+  status character varying,
+  imagem character varying,
+  CONSTRAINT projeto_pkey PRIMARY KEY (id_projeto)
+);
+CREATE TABLE public.projeto_aldeia (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  id_projeto integer NOT NULL,
+  id_aldeia integer NOT NULL,
+  papel character varying,
+  observacao text,
+  CONSTRAINT projeto_aldeia_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_projeto_aldeia_projeto FOREIGN KEY (id_projeto) REFERENCES public.projeto(id_projeto),
+  CONSTRAINT fk_projeto_aldeia_aldeia FOREIGN KEY (id_aldeia) REFERENCES public.aldeia(id_aldeia)
+);
+CREATE TABLE public.mensagem_contato (
+  id_mensagem uuid NOT NULL DEFAULT gen_random_uuid(),
+  origem text NOT NULL DEFAULT 'portal'::text CHECK (origem = ANY (ARRAY['portal'::text, 'inamaty-kaxe'::text])),
+  nome text NOT NULL,
+  email text NOT NULL,
+  telefone text,
+  assunto text NOT NULL,
+  mensagem text NOT NULL,
+  autorizacao boolean NOT NULL DEFAULT false,
+  lida boolean NOT NULL DEFAULT false,
+  criado_em timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT mensagem_contato_pkey PRIMARY KEY (id_mensagem)
 );

@@ -6,19 +6,13 @@ import type { ResourceFormState } from "@/lib/admin/fields";
 import { parseFormData } from "@/lib/admin/parse";
 import { getResource } from "@/lib/admin/resources";
 import { requireUser } from "@/lib/auth";
+import { dbErrorCode, describeDbError, logDbError } from "@/lib/db-error";
 import {
   readImageFile,
   removeImage,
   uploadImage,
   validateImageFile,
 } from "@/lib/storage";
-
-/** Erros do PostgREST trazem o código do Postgres (23503 = chave estrangeira). */
-function pgCode(error: unknown) {
-  return typeof error === "object" && error !== null && "code" in error
-    ? String(error.code)
-    : undefined;
-}
 
 export async function salvarRegistro(
   slug: string,
@@ -82,11 +76,8 @@ export async function salvarRegistro(
     }
   } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
-    const message =
-      pgCode(error) === "23503"
-        ? "Um dos registros selecionados não existe mais. Atualize a página e tente de novo."
-        : "Não foi possível salvar. Tente novamente.";
-    return { error: message, fieldErrors: {}, values, attempt };
+    logDbError(`salvar ${resource.table}${id !== null ? ` #${id}` : ""}`, error);
+    return { error: describeDbError(error), fieldErrors: {}, values, attempt };
   }
 
   revalidatePath("/", "layout");
@@ -112,7 +103,8 @@ export async function excluirRegistro(slug: string, id: number) {
     .eq(resource.idColumn, id);
 
   if (error) {
-    const motivo = pgCode(error) === "23503" ? "em-uso" : "falha";
+    logDbError(`excluir ${resource.table} #${id}`, error);
+    const motivo = dbErrorCode(error) === "23503" ? "em-uso" : "falha";
     redirect(`/admin/${slug}/${id}?erro=${motivo}`);
   }
 

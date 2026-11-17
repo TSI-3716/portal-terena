@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { describeDbError, logDbError } from "@/lib/db-error";
 import { isNoticiaId, NOTICIA_IMAGE_FOLDER } from "@/lib/noticias";
 import { noticiaSchema } from "@/lib/schemas";
 import { readImageFile, removeImage, uploadImage, validateImageFile } from "@/lib/storage";
@@ -80,7 +81,7 @@ export async function salvarNoticia(
         .update(payload)
         .eq("id_noticia", id);
 
-      if (error) throw new Error(error.message);
+      if (error) throw error;
 
       if (uploaded && current.imagem && current.imagem !== uploaded) {
         await removeImage(supabase, current.imagem);
@@ -90,11 +91,12 @@ export async function salvarNoticia(
         ...payload,
         id_usuario: user.id,
       });
-      if (error) throw new Error(error.message);
+      if (error) throw error;
     }
-  } catch {
+  } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
-    return fail("Não foi possível salvar a notícia.");
+    logDbError(`salvar noticia${id ? ` #${id}` : ""}`, error);
+    return fail(describeDbError(error, "salvar a notícia"));
   }
 
   revalidatePath("/");
@@ -120,6 +122,7 @@ export async function excluirNoticia(id: string) {
     .eq("id_noticia", id);
 
   if (error) {
+    logDbError(`excluir noticia #${id}`, error);
     redirect("/admin/noticias?erro=excluir");
   }
 

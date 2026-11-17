@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { StorageUploadError } from "@/lib/db-error";
 
 export const ASSETS_BUCKET = "assets";
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -73,7 +74,7 @@ export async function uploadImage(
   });
 
   if (error) {
-    throw new Error("Não foi possível enviar a imagem.");
+    throw new StorageUploadError(error);
   }
 
   return path;
