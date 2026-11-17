@@ -1,46 +1,32 @@
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { staticImage } from "@/lib/images";
+"use client"
 import { cn } from "@/lib/utils";
+import { LatLngExpression } from "leaflet";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 export function VillageMap({
   places,
   className,
-  imageSrc = staticImage("home_map"),
 }: {
   places: string[];
   className?: string;
-  imageSrc?: string | null;
 }) {
+  const position: LatLngExpression = [51.505, -0.09]
+
   return (
-    <div
-      className={cn(
-        "relative min-h-[330px] overflow-hidden rounded-xl border bg-accent",
-        className
-      )}
-    >
-      {imageSrc ? (
-        <Image
-          src={imageSrc}
-          alt="Mapa de referência das aldeias"
-          fill
-          sizes="(max-width: 1024px) 100vw, 760px"
-          className="object-cover opacity-95"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-accent via-secondary to-accent" />
-      )}
-      <div className="relative flex min-h-[330px] flex-wrap items-center justify-around gap-3 p-5">
-        {places.map((place) => (
-          <Badge
-            key={place}
-            variant="outline"
-            className="h-auto border-2 border-primary bg-background px-3 py-2 text-sm font-bold text-primary shadow-md"
-          >
-            ● {place}
-          </Badge>
-        ))}
-      </div>
-    </div>
-  );
+    <MapContainer className={cn(
+      "min-h-[320px] rounded-xl border",
+      className
+    )} center={position} zoom={13} scrollWheelZoom={false}>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Marker position={position}>
+        <Popup>
+          A pretty CSS3 popup. <br /> Easily customizable.
+        </Popup>
+      </Marker>
+    </MapContainer>
+  )
 }

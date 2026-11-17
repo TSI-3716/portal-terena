@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UrlFilter } from "@/components/url-filter";
-import { VillageMap } from "@/components/village-map";
+import { VillageMap } from "@/components/village-map-client";
 import {
   aldeiaHref,
   listAldeias,
@@ -43,7 +43,7 @@ export default async function AldeiasPage({
       <PageSection>
         <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
           <VillageMap
-            places={(filtro ? [filtro] : localizacoes).map(municipio)}
+            places={["Aquidauana", "Miranda", "Sidrolândia", "Campo Grande"]}
           />
           <Card>
             <CardHeader>

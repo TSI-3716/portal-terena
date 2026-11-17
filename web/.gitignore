@@ -1,8 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -11,17 +11,20 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage/
 
 # next.js
-/.next/
-/out/
+# sem barra no início: também ignora cache aninhado, como web/web/.next
+.next/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
+Thumbs.db
+Desktop.ini
 *.pem
 
 # debug
@@ -40,3 +43,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# editor
+.idea/
+*.iml
+
+# supabase cli (estado local da máquina)
+supabase/.branches/
+supabase/.temp/
+
+# scripts locais de checagem
+/tmp-*
