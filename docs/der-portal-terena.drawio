@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net" agent="portal-terena" version="22.1.0">
+  <diagram id="der-portal-terena" name="DER Portal Terena">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" value="DER — Portal Terena" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontFamily=Helvetica;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="40" y="16" width="420" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitulo" value="Conteúdo separado por aldeia. Um administrador publica tudo (conta de login, sem tabela de usuário)." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontFamily=Helvetica;fontColor=#374151;" vertex="1" parent="1">
+          <mxGeometry x="40" y="46" width="780" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="aldeia" value="&lt;b&gt;ALDEIA&lt;/b&gt;&lt;hr&gt;PK id_aldeia&lt;br&gt;nome&lt;br&gt;descricao&lt;br&gt;historia&lt;br&gt;texto_cultura&lt;br&gt;texto_juventude&lt;br&gt;localizacao&lt;br&gt;imagem&lt;br&gt;data_fundacao&lt;br&gt;telefone&lt;br&gt;email&lt;br&gt;endereco&lt;br&gt;horario_atendimento&lt;br&gt;observacao_contato" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="560" y="250" width="230" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="evento" value="&lt;b&gt;EVENTO&lt;/b&gt;&lt;hr&gt;PK id_evento&lt;br&gt;titulo&lt;br&gt;descricao&lt;br&gt;data_evento&lt;br&gt;local&lt;br&gt;imagem&lt;br&gt;status&lt;br&gt;FK id_aldeia (opcional)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="230" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="noticia" value="&lt;b&gt;NOTICIA&lt;/b&gt;&lt;hr&gt;PK id_noticia&lt;br&gt;titulo&lt;br&gt;resumo&lt;br&gt;conteudo&lt;br&gt;imagem&lt;br&gt;data_publicacao&lt;br&gt;status&lt;br&gt;publicado_por&lt;br&gt;FK id_evento (opcional)&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="230" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="mensagem" value="&lt;b&gt;MENSAGEM_CONTATO&lt;/b&gt;&lt;hr&gt;PK id_mensagem&lt;br&gt;nome&lt;br&gt;email&lt;br&gt;telefone&lt;br&gt;assunto&lt;br&gt;mensagem&lt;br&gt;autorizacao&lt;br&gt;lida&lt;br&gt;criado_em&lt;br&gt;FK id_aldeia (opcional)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="40" y="680" width="230" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="projeto" value="&lt;b&gt;PROJETO&lt;/b&gt;&lt;hr&gt;PK id_projeto&lt;br&gt;titulo&lt;br&gt;descricao&lt;br&gt;objetivo&lt;br&gt;data_inicio&lt;br&gt;data_fim&lt;br&gt;status&lt;br&gt;imagem&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="100" width="230" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="artesanato" value="&lt;b&gt;ARTESANATO&lt;/b&gt;&lt;hr&gt;PK id_artesanato&lt;br&gt;nome&lt;br&gt;descricao&lt;br&gt;categoria&lt;br&gt;imagem&lt;br&gt;preco&lt;br&gt;disponivel&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="360" width="230" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="secao" value="&lt;b&gt;SECAO&lt;/b&gt;&lt;hr&gt;PK id_secao&lt;br&gt;titulo&lt;br&gt;texto&lt;br&gt;imagem&lt;br&gt;tipo (cultura | juventude)&lt;br&gt;ordem&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="610" width="230" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="marco" value="&lt;b&gt;MARCO&lt;/b&gt;&lt;hr&gt;PK id_marco&lt;br&gt;titulo&lt;br&gt;descricao&lt;br&gt;ordem&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="360" y="900" width="210" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="anciao" value="&lt;b&gt;ANCIAO&lt;/b&gt;&lt;hr&gt;PK id_anciao&lt;br&gt;nome&lt;br&gt;descricao&lt;br&gt;imagem&lt;br&gt;ordem&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="640" y="900" width="210" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="foto" value="&lt;b&gt;FOTO&lt;/b&gt;&lt;hr&gt;PK id_foto&lt;br&gt;imagem&lt;br&gt;legenda&lt;br&gt;ordem&lt;br&gt;FK id_aldeia" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="920" y="900" width="210" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="legenda" value="Cardinalidade: barra dupla = exatamente 1. Círculo e barra = 0 ou 1. Pé de galinha = zero ou muitos. id_aldeia vazio em EVENTO e MENSAGEM_CONTATO é conteúdo do portal (feira, contato geral)." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;fontSize=12;fontFamily=Helvetica;strokeColor=#111827;fillColor=#ffffff;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1080" width="1270" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="e-evento" value="realiza" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERzeroToOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0;exitY=0.18;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="evento">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-noticia" value="tem" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0;exitY=0.48;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="noticia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-mensagem" value="recebe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERzeroToOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0;exitY=0.82;exitDx=0;exitDy=0;entryX=1;entryY=0.35;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="mensagem">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-projeto" value="conduz" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=1;exitY=0.22;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="projeto">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-artesanato" value="produz" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="artesanato">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-secao" value="descreve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=1;exitY=0.78;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="secao">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-marco" value="registra" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="marco">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-anciao" value="reconhece" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0.55;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="anciao">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-foto" value="exibe" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="aldeia" target="foto">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-evento-noticia" value="pode gerar" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERzeroToOne;startFill=0;jettySize=auto;orthogonalLoop=1;fontSize=11;fontFamily=Helvetica;labelBackgroundColor=#ffffff;strokeColor=#111827;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="evento" target="noticia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
