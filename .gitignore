@@ -1,0 +1,13 @@
+# Editor e sistema (a raiz do repositório fica fora do .gitignore do Next)
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
