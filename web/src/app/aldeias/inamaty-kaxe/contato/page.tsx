@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { contatoItems } from "@/components/aldeia-contatos";
+import { ContactForm } from "@/components/contact-form";
+import { InfoList } from "@/components/content-blocks";
 import { PageHeading, PageSection } from "@/components/site-layout";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,10 +10,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getInamaty, listContatosAldeia } from "@/lib/conteudo";
 
 export const metadata: Metadata = { title: "Contato | Inamaty Kaxé" };
 
-export default function InamatyContatoPage() {
+/** Exibido enquanto a comunidade não cadastra seus contatos no painel. */
+const canaisPadrao = [
+  { label: "Cacique", value: "Representação da comunidade" },
+  { label: "Vice-Cacique / Lideranças", value: "Informações e encaminhamentos" },
+  { label: "Telefone / WhatsApp", value: "A confirmar pela comunidade" },
+  {
+    label: "E-mail",
+    value: (
+      <a
+        href="mailto:inamatykaxe@portalterena.org.br"
+        className="underline-offset-4 hover:underline"
+      >
+        inamatykaxe@portalterena.org.br
+      </a>
+    ),
+  },
+  { label: "Redes sociais", value: "Perfis oficiais da comunidade" },
+];
+
+export default async function InamatyContatoPage() {
+  const aldeia = await getInamaty();
+  const contatos = aldeia ? await listContatosAldeia(aldeia.id_aldeia) : [];
+  const canais = contatos.length > 0 ? contatos.flatMap(contatoItems) : canaisPadrao;
+
   return (
     <>
       <PageHeading
@@ -20,58 +45,24 @@ export default function InamatyContatoPage() {
         description="Fale com a comunidade e envie sua mensagem."
       />
       <PageSection contained={false} className="pt-4">
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
           <Card>
             <CardHeader>
               <CardTitle className="text-primary">Canais de contato</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <p className="font-medium text-primary">Cacique</p>
-                <p className="text-muted-foreground">
-                  Representação da comunidade
-                </p>
-              </div>
-              <div>
-                <p className="font-medium text-primary">
-                  Vice-Cacique / Lideranças
-                </p>
-                <p className="text-muted-foreground">
-                  Informações e encaminhamentos
-                </p>
-              </div>
-              <div>
-                <p className="font-medium text-primary">Telefone / WhatsApp</p>
-                <p className="text-muted-foreground">
-                  A confirmar pela comunidade
-                </p>
-              </div>
-              <div>
-                <p className="font-medium text-primary">E-mail</p>
-                <p className="text-muted-foreground">
-                  inamatykaxe@portalterena.org.br
-                </p>
-              </div>
-              <div>
-                <p className="font-medium text-primary">Redes sociais</p>
-                <p className="text-muted-foreground">
-                  Perfis oficiais da comunidade
-                </p>
-              </div>
+            <CardContent>
+              <InfoList items={canais} />
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
               <CardTitle className="text-primary">Envie uma mensagem</CardTitle>
               <CardDescription>
-                O formulário da aldeia será ligado depois. Por enquanto, use a
-                página de contato do portal.
+                Sua mensagem é encaminhada às lideranças da comunidade.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild>
-                <Link href="/contato">Ir para o contato do portal</Link>
-              </Button>
+              <ContactForm variant="aldeia" className="mt-0" />
             </CardContent>
           </Card>
         </div>

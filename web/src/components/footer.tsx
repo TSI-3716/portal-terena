@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { FooterContextColumn } from "@/components/footer-context-column";
 import { Container } from "@/components/site-layout";
 import { Separator } from "@/components/ui/separator";
 import { navLinks } from "@/lib/nav";
@@ -31,18 +32,7 @@ export function Footer() {
             ))}
           </ul>
         </div>
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold tracking-wide text-primary">
-            CULTURA
-          </h3>
-          <ul className="space-y-1.5 text-sm text-muted-foreground">
-            <li>Memória Viva / Anciãos</li>
-            <li>História Terena</li>
-            <li>Língua Terena</li>
-            <li>Tradições e Saberes</li>
-            <li>Calendário Cultural</li>
-          </ul>
-        </div>
+        <FooterContextColumn />
         <div className="space-y-3">
           <h3 className="text-sm font-semibold tracking-wide text-primary">
             CONTATO

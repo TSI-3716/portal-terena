@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
 import { BookOpen, ShoppingBag, ShoppingBasket, Store, Users } from "lucide-react";
 import { Hero } from "@/components/hero";
-import { SiteCard } from "@/components/site-card";
+import { ArtesanatoCard } from "@/components/artesanato-card";
+import { EventoCard } from "@/components/evento-card";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Tile } from "@/components/tile";
+import { listArtesanato, listEventos } from "@/lib/conteudo";
+import { staticImage } from "@/lib/images";
 
 export const metadata: Metadata = { title: "Feira & Artesanato" };
 
-export default function FeiraPage() {
+export default async function FeiraPage() {
+  const [eventos, pecas] = await Promise.all([listEventos(3), listArtesanato(8)]);
+
   return (
     <>
       <Hero
         eyebrow="Cultura • trabalho • renda"
         title="Feira & Artesanato Terena"
         description="Valorizando o trabalho das artesãs e artesãos Terena, promovendo nossa cultura, gerando renda e fortalecendo nossa identidade."
+        imageSrc={staticImage("feira_hero")}
       />
       <PageSection>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -46,51 +52,31 @@ export default function FeiraPage() {
       </PageSection>
       <PageSection muted>
         <SectionHeader title="Feiras e eventos em destaque" />
-        <div className="grid gap-4 md:grid-cols-3">
-          <SiteCard
-            meta="24 a 26 de maio de 2024"
-            title="Feira Cultural Terena 2024"
-            description="Artesanato, apresentações culturais, culinária tradicional e muito mais."
-            hrefLabel="Ver detalhes"
-          />
-          <SiteCard
-            meta="10 a 12 de maio de 2024"
-            title="Feira das Mulheres Artesãs"
-            description="Valorizando o trabalho das mulheres Terena e sua força criativa."
-            hrefLabel="Ver detalhes"
-          />
-          <SiteCard
-            meta="07 a 09 de junho de 2024"
-            title="Encontro de Artesãos Terena"
-            description="Troca de saberes, técnicas e fortalecimento da cultura Terena."
-            hrefLabel="Ver detalhes"
-          />
-        </div>
+        {eventos.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nenhum evento cadastrado no momento.
+          </p>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-3">
+            {eventos.map((evento) => (
+              <EventoCard key={evento.id_evento} evento={evento} />
+            ))}
+          </div>
+        )}
       </PageSection>
       <PageSection>
         <SectionHeader title="Produtos em destaque" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <SiteCard
-            title="Cesto Terena"
-            description="Cestaria artesanal."
-            hrefLabel="Ver produto"
-          />
-          <SiteCard
-            title="Colar de Miçangas"
-            description="Artesanato tradicional."
-            hrefLabel="Ver produto"
-          />
-          <SiteCard
-            title="Vaso Cerâmico"
-            description="Cerâmica Terena."
-            hrefLabel="Ver produto"
-          />
-          <SiteCard
-            title="Balaio Decorativo"
-            description="Peça de tecelagem."
-            hrefLabel="Ver produto"
-          />
-        </div>
+        {pecas.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nenhuma peça disponível no momento.
+          </p>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {pecas.map((peca) => (
+              <ArtesanatoCard key={peca.id_artesanato} peca={peca} metaFrom="preco" />
+            ))}
+          </div>
+        )}
       </PageSection>
     </>
   );

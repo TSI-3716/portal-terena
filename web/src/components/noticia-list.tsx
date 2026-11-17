@@ -1,21 +1,29 @@
 import { SiteCard } from "@/components/site-card";
 import { formatDate } from "@/lib/format";
 import type { Noticia } from "@/lib/noticias";
-import { getPublicAssetUrl } from "@/lib/storage";
+import { resolveImageUrl } from "@/lib/storage";
 
 export function NoticiaList({
   noticias,
   empty = "Nenhuma notícia publicada.",
+  columns = 3,
 }: {
   noticias: Omit<Noticia, "conteudo">[];
   empty?: string;
+  columns?: 2 | 3;
 }) {
   if (noticias.length === 0) {
     return <p className="text-sm text-muted-foreground">{empty}</p>;
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div
+      className={
+        columns === 2
+          ? "grid gap-4 md:grid-cols-2"
+          : "grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+      }
+    >
       {noticias.map((noticia) => (
         <SiteCard
           key={noticia.id_noticia}
@@ -25,9 +33,7 @@ export function NoticiaList({
           description={noticia.resumo}
           href={`/noticias/${noticia.id_noticia}`}
           hrefLabel="Ler notícia"
-          imageSrc={
-            noticia.imagem ? getPublicAssetUrl(noticia.imagem) : undefined
-          }
+          imageSrc={resolveImageUrl(noticia.imagem)}
           imageAlt={noticia.titulo}
         />
       ))}

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { NoticiaForm } from "@/app/admin/noticias/form";
 import { PageHeading } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
+import { listAldeias } from "@/lib/conteudo";
 import { getNoticiaAdmin } from "@/lib/noticias";
 
 export const metadata: Metadata = { title: "Editar notícia" };
@@ -14,7 +15,7 @@ export default async function EditarNoticiaPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const noticia = await getNoticiaAdmin(id);
+  const [noticia, aldeias] = await Promise.all([getNoticiaAdmin(id), listAldeias()]);
   if (!noticia) notFound();
 
   return (
@@ -27,7 +28,7 @@ export default async function EditarNoticiaPage({
           </Button>
         ) : null}
       </div>
-      <NoticiaForm noticia={noticia} />
+      <NoticiaForm noticia={noticia} aldeias={aldeias} />
     </>
   );
 }

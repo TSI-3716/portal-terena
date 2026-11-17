@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeading } from "@/components/site-layout";
+import { AdminNotice } from "@/components/admin/admin-notice";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
@@ -9,7 +10,12 @@ import { noticiaStatusLabel } from "@/lib/schemas";
 
 export const metadata: Metadata = { title: "Notícias" };
 
-export default async function AdminNoticiasPage() {
+export default async function AdminNoticiasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ok?: string; erro?: string }>;
+}) {
+  const { ok, erro } = await searchParams;
   const noticias = await listNoticiasAdmin();
 
   return (
@@ -23,6 +29,7 @@ export default async function AdminNoticiasPage() {
           <Link href="/admin/noticias/nova">Nova notícia</Link>
         </Button>
       </div>
+      <AdminNotice ok={ok} erro={erro} />
       {noticias.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           Nenhuma notícia cadastrada.

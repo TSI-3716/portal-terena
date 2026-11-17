@@ -5,10 +5,12 @@ import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { staticImage } from "@/lib/images";
 import { listNoticiasPublicas } from "@/lib/noticias";
-import { getPublicAssetUrl } from "@/lib/storage";
 
 export const metadata: Metadata = { title: "Notícias" };
+
+const DESTAQUES = 2;
 
 export default async function NoticiasPage({
   searchParams,
@@ -18,6 +20,8 @@ export default async function NoticiasPage({
   const { q = "" } = await searchParams;
   const busca = q.trim();
   const noticias = await listNoticiasPublicas(busca);
+  const destaques = busca ? [] : noticias.slice(0, DESTAQUES);
+  const demais = busca ? noticias : noticias.slice(DESTAQUES);
 
   return (
     <>
@@ -25,16 +29,27 @@ export default async function NoticiasPage({
         eyebrow="Informação e comunidade"
         title="Notícias"
         description="Acompanhe as notícias do povo Terena, informações, cultura e acontecimentos das aldeias e de Mato Grosso do Sul."
-        imageSrc={getPublicAssetUrl("noticias.jpg")}
+        imageSrc={staticImage("noticias_hero")}
       />
-      <PageSection>
-        <SectionHeader title="Notícias publicadas" />
-        <form className="mb-6 flex max-w-md items-end gap-2">
+      {destaques.length > 0 ? (
+        <PageSection>
+          <SectionHeader title="Últimas notícias em destaque" />
+          <NoticiaList noticias={destaques} columns={2} />
+        </PageSection>
+      ) : null}
+      <PageSection muted={destaques.length > 0}>
+        {busca || destaques.length === 0 ? (
+          <SectionHeader
+            title={busca ? `Resultados para “${busca}”` : "Notícias publicadas"}
+          />
+        ) : null}
+        <form className="mb-6 flex max-w-md items-end gap-2" role="search">
           <Field>
             <FieldLabel htmlFor="buscar-noticia">Buscar notícia</FieldLabel>
             <Input
               id="buscar-noticia"
               name="q"
+              type="search"
               defaultValue={busca}
               placeholder="Palavra-chave"
             />
@@ -43,14 +58,16 @@ export default async function NoticiasPage({
             Buscar
           </Button>
         </form>
-        <NoticiaList
-          noticias={noticias}
-          empty={
-            busca
-              ? "Nenhuma notícia encontrada."
-              : "Nenhuma notícia publicada."
-          }
-        />
+        {busca || demais.length > 0 || destaques.length === 0 ? (
+          <NoticiaList
+            noticias={demais}
+            empty={
+              busca
+                ? "Nenhuma notícia encontrada. Tente outra palavra-chave."
+                : "Nenhuma notícia publicada ainda."
+            }
+          />
+        ) : null}
       </PageSection>
     </>
   );

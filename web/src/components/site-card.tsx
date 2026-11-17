@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MediaPlaceholder } from "@/components/media-placeholder";
@@ -5,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -20,6 +22,7 @@ export function SiteCard({
   search,
   imageSrc,
   imageAlt = "",
+  details,
 }: {
   title: string;
   description: string;
@@ -29,6 +32,7 @@ export function SiteCard({
   search?: string;
   imageSrc?: string;
   imageAlt?: string;
+  details?: ReactNode;
 }) {
   return (
     <Card className="pt-0" data-search={search}>
@@ -50,6 +54,11 @@ export function SiteCard({
         <CardTitle className="text-primary">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
+      {details ? (
+        <CardContent className="space-y-1 text-sm text-muted-foreground">
+          {details}
+        </CardContent>
+      ) : null}
       <CardFooter>
         {href ? (
           <Button variant="outline" size="sm" asChild>

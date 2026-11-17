@@ -4,12 +4,16 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 
-export async function login(_prev: { error: string } | null, formData: FormData) {
+export async function login(
+  prev: { error: string; email: string; senha: string; attempt: number } | null,
+  formData: FormData,
+) {
   const email = String(formData.get("email") ?? "").trim();
   const senha = String(formData.get("senha") ?? "");
+  const attempt = (prev?.attempt ?? 0) + 1;
 
   if (!email || !senha) {
-    return { error: "Informe e-mail e senha." };
+    return { error: "Informe e-mail e senha.", email, senha, attempt };
   }
 
   const supabase = await createClient();
@@ -19,7 +23,7 @@ export async function login(_prev: { error: string } | null, formData: FormData)
   });
 
   if (error) {
-    return { error: "E-mail ou senha inválidos." };
+    return { error: "E-mail ou senha inválidos.", email, senha, attempt };
   }
 
   revalidatePath("/", "layout");
