@@ -1,7 +1,5 @@
 "use client"
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { randomBytes } from "crypto";
 import { LatLngExpression } from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";

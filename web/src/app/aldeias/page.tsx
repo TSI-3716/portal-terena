@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UrlFilter } from "@/components/url-filter";
-import { VillageMap } from "@/components/village-map";
+import { VillageMap } from "@/components/village-map-client";
 import {
   aldeiaHref,
   listAldeias,
