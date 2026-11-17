@@ -18,7 +18,7 @@ type FieldBase = {
 
 export type FieldDef =
   | (FieldBase & {
-      type: "text" | "email" | "tel" | "textarea" | "date" | "datetime" | "money" | "image";
+      type: "text" | "email" | "tel" | "url" | "textarea" | "date" | "datetime" | "money" | "image";
     })
   | (FieldBase & { type: "boolean"; defaultValue?: boolean })
   | (FieldBase & { type: "select"; options: readonly Option[] })

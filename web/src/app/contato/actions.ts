@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { criarMensagemContato } from "@/lib/contato";
+import { registrarErroDb } from "@/lib/log-erro";
 import {
   contatoAldeiaSchema,
   contatoSchema,
@@ -42,7 +43,10 @@ export async function enviarContatoPortal(
 
   try {
     await criarMensagemContato({ origem: "portal", ...parsed.data });
-  } catch {
+  } catch (error) {
+    await registrarErroDb("enviar mensagem de contato do portal", error, {
+      tabela: "mensagem_contato",
+    });
     return { ok: false, message: FALHA_ENVIO };
   }
 
@@ -66,7 +70,10 @@ export async function enviarContatoAldeia(
 
   try {
     await criarMensagemContato({ origem: "inamaty-kaxe", ...parsed.data });
-  } catch {
+  } catch (error) {
+    await registrarErroDb("enviar mensagem de contato da Inamaty Kaxé", error, {
+      tabela: "mensagem_contato",
+    });
     return { ok: false, message: FALHA_ENVIO };
   }
 

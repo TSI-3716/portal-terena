@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { ARTESANATO_IMAGE_FOLDER, isArtesanatoId } from "@/lib/artesanato";
-import { describeDbError, logDbError } from "@/lib/db-error";
+import { describeDbError } from "@/lib/db-error";
+import { registrarErroDb } from "@/lib/log-erro";
 import { artesanatoSchema } from "@/lib/schemas";
 import { readImageFile, removeImage, uploadImage, validateImageFile } from "@/lib/storage";
 
@@ -95,7 +96,10 @@ export async function salvarArtesanato(
     }
   } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
-    logDbError(`salvar artesanato${id ? ` #${id}` : ""}`, error);
+    await registrarErroDb(`salvar artesanato${id ? ` #${id}` : ""}`, error, {
+      tabela: "artesanato",
+      registroId: id,
+    });
     return fail(describeDbError(error, "salvar o artesanato"));
   }
 
@@ -122,7 +126,10 @@ export async function excluirArtesanato(rawId: number | string) {
     .eq("id_artesanato", id);
 
   if (error) {
-    logDbError(`excluir artesanato #${id}`, error);
+    await registrarErroDb(`excluir artesanato #${id}`, error, {
+      tabela: "artesanato",
+      registroId: id,
+    });
     redirect("/admin/artesanato?erro=excluir");
   }
 

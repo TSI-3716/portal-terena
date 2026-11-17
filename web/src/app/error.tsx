@@ -1,10 +1,26 @@
 "use client";
 
+import { useEffect } from "react";
+import { registrarErroPagina } from "@/app/registrar-erro";
 import { Container } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
 
 /** Exibido quando uma consulta ao banco falha (ex.: tabela ou política ausente). */
-export default function ErrorPage({ reset }: { error: Error; reset: () => void }) {
+export default function ErrorPage({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    void registrarErroPagina({
+      mensagem: error.message,
+      digest: error.digest,
+      rota: window.location.pathname,
+    });
+  }, [error]);
+
   return (
     <Container className="py-16">
       <div className="max-w-xl space-y-3">

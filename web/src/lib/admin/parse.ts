@@ -1,8 +1,8 @@
 import type { FieldDef, FormValues } from "@/lib/admin/fields";
+import { formatTelefone, isEmail, isTelefone, isUrl, MENSAGENS } from "@/lib/validation";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type ParseResult = {
   data: Record<string, unknown>;
@@ -54,7 +54,15 @@ export function parseFormData(fields: readonly FieldDef[], formData: FormData): 
 
     switch (field.type) {
       case "email":
-        if (!EMAIL.test(text)) errors[field.name] = "Informe um e-mail válido";
+        if (!isEmail(text)) errors[field.name] = MENSAGENS.email;
+        else data[field.name] = text.toLowerCase();
+        break;
+      case "tel":
+        if (!isTelefone(text)) errors[field.name] = MENSAGENS.telefone;
+        else data[field.name] = formatTelefone(text);
+        break;
+      case "url":
+        if (!isUrl(text)) errors[field.name] = MENSAGENS.url;
         else data[field.name] = text;
         break;
       case "date":

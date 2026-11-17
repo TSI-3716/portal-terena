@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EMAIL_REGEX, MENSAGENS, NOME_REGEX, TELEFONE_REGEX } from "@/lib/validation";
 
 export const contatoAssuntos = ["informacoes", "parcerias", "imprensa"] as const;
 
@@ -16,9 +17,22 @@ const nomeSchema = z
   .string()
   .trim()
   .min(3, "Informe seu nome completo")
-  .max(120, "Use no máximo 120 caracteres");
+  .max(120, "Use no máximo 120 caracteres")
+  .regex(NOME_REGEX, MENSAGENS.nome);
 
-const emailSchema = z.email("Informe um e-mail válido").max(254);
+const emailSchema = z
+  .string()
+  .trim()
+  .max(254, "E-mail muito longo")
+  .regex(EMAIL_REGEX, MENSAGENS.email);
+
+/** Telefone opcional: vazio passa; preenchido precisa seguir o padrão brasileiro. */
+const telefoneOpcionalSchema = z
+  .string()
+  .trim()
+  .max(30, "Telefone muito longo")
+  .refine((value) => value === "" || TELEFONE_REGEX.test(value), MENSAGENS.telefone)
+  .optional();
 
 const mensagemSchema = z
   .string()
@@ -30,7 +44,7 @@ const mensagemSchema = z
 export const contatoSchema = z.object({
   nome: nomeSchema,
   email: emailSchema,
-  telefone: z.string().trim().max(30, "Telefone muito longo").optional(),
+  telefone: telefoneOpcionalSchema,
   assunto: z
     .string()
     .refine(

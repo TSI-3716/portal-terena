@@ -78,7 +78,11 @@ export function describeDbError(error: unknown, acao = "salvar") {
     case "42501":
       return `Sem permissão para ${acao} neste cadastro. As políticas de acesso (RLS) da tabela não liberam a operação para o usuário logado. (código 42501)`;
     case "23505":
-      return "Já existe um registro com esses dados. Se o problema continuar, a numeração da tabela precisa ser ressincronizada. (código 23505)";
+      // Conflito na chave primária indica numeração (identity) dessincronizada;
+      // em outra restrição única, é um valor repetido (ex.: nome já cadastrado).
+      return /_pkey"?/.test(message)
+        ? "A numeração da tabela está dessincronizada com os registros existentes. Avise o suporte. (código 23505)"
+        : "Já existe um registro com esse valor. Use outro nome ou edite o registro existente. (código 23505)";
     case "23502":
       return `Campo obrigatório no banco ficou vazio${coluna ? `: ${coluna}` : ""}. (código 23502)`;
     case "23503":
