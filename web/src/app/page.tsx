@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { VillageMap } from "@/components/village-map-client";
 import { staticImage } from "@/lib/images";
 import { listNoticiasPublicas } from "@/lib/noticias";
+import { resumirTexto } from "@/lib/text";
 
 export default async function HomePage() {
   const noticias = await listNoticiasPublicas("", 3);
@@ -68,7 +69,7 @@ export default async function HomePage() {
             title="Dança do Bate-Pau"
             imageSrc={staticImage("cultura_2")}
             imageAlt="Dança do Bate-Pau"
-            description="Expressão cultural que representa força, união e respeito."
+            description={resumirTexto("Expressão cultural que representa força, união e respeito.")}
             href="/cultura"
             hrefLabel="Ver mais"
           />
@@ -77,7 +78,7 @@ export default async function HomePage() {
             title="Juventude Terena"
             imageSrc={staticImage("juventude_1")}
             imageAlt="Juventude Terena"
-            description="Protagonismo, aprendizado, participação e transformação."
+            description={resumirTexto("Protagonismo, aprendizado, participação e transformação.")}
             href="/juventude"
             hrefLabel="Conheça"
           />
@@ -86,7 +87,7 @@ export default async function HomePage() {
             title="Feira & Artesanato"
             imageSrc={staticImage("feira_p1")}
             imageAlt="Feira e artesanato"
-            description="Valorize o trabalho das artesãs e artesãos Terena."
+            description={resumirTexto("Valorize o trabalho das artesãs e artesãos Terena.")}
             href="/feira"
             hrefLabel="Conheça"
           />

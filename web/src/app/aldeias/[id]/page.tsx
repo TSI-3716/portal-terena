@@ -48,7 +48,7 @@ export default async function AldeiaPage({ params }: Props) {
       <PageSection>
         <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
           <ContentCard title="Sobre a aldeia">
-            <p className="whitespace-pre-wrap">
+            <p className="whitespace-pre-wrap leading-relaxed text-pretty text-foreground/90">
               {aldeia.descricao || "A descrição desta aldeia ainda não foi cadastrada."}
             </p>
           </ContentCard>
