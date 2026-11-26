@@ -1,30 +1,36 @@
 import type { NextConfig } from "next";
 
-function supabaseStorageHost() {
+function supabaseStorage() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!url) return null;
 
   try {
-    return new URL(url).hostname;
+    const parsed = new URL(url);
+    // http só no Supabase local (supabase start); produção usa https.
+    const protocol = parsed.protocol === "http:" ? ("http" as const) : ("https" as const);
+    return { hostname: parsed.hostname, port: parsed.port, protocol };
   } catch {
     return null;
   }
 }
 
-const supabaseHost = supabaseStorageHost();
+const storage = supabaseStorage();
 
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: "3mb",
+      bodySizeLimit: "12mb",
     },
   },
   images: {
-    remotePatterns: supabaseHost
+    // Supabase local roda em 127.0.0.1, que o otimizador bloqueia por padrão.
+    dangerouslyAllowLocalIP: storage?.hostname === "127.0.0.1" || storage?.hostname === "localhost",
+    remotePatterns: storage
       ? [
           {
-            protocol: "https",
-            hostname: supabaseHost,
+            protocol: storage.protocol,
+            hostname: storage.hostname,
+            port: storage.port,
             pathname: "/storage/v1/object/public/**",
           },
         ]
