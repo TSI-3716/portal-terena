@@ -30,6 +30,7 @@ export default async function NovoRegistroPage({ params }: Props) {
           initialValues={{}}
           options={options}
           cancelHref={`/admin/${resource.slug}`}
+          galeria={resource.galeria ? [] : undefined}
         />
       </div>
     </>
