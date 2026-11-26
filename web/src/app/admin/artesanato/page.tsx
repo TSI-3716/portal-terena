@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeading } from "@/components/site-layout";
 import { AdminNotice } from "@/components/admin/admin-notice";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { listArtesanatosAdmin } from "@/lib/artesanato";
 
@@ -41,13 +40,11 @@ export default async function AdminArtesanatoPage({
             >
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-primary">{artesanato.nome}</p>
-                <p className="text-sm text-muted-foreground">
-                  {artesanato.categoria} · R$ {Number(artesanato.preco).toFixed(2).replace(".", ",")}
-                </p>
+                <p className="text-sm text-muted-foreground">{artesanato.categoria}</p>
               </div>
-              <Badge variant={artesanato.disponivel ? "default" : "secondary"}>
-                {artesanato.disponivel ? "Disponível" : "Indisponível"}
-              </Badge>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href={`/artesanato/${artesanato.id_artesanato}`}>Ver no portal</Link>
+              </Button>
               <Button variant="outline" size="sm" asChild>
                 <Link href={`/admin/artesanato/${artesanato.id_artesanato}`}>Editar</Link>
               </Button>

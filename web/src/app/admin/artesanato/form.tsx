@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { excluirArtesanato, salvarArtesanato } from "@/app/admin/artesanato/actions";
 import { ConfirmButton } from "@/components/admin/confirm-button";
+import { GaleriaField, type GaleriaItem } from "@/components/admin/galeria-field";
 import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -32,14 +34,19 @@ const categorias = [
   "Outro",
 ] as const;
 
-export function ArtesanatoForm({ artesanato }: { artesanato?: Artesanato }) {
+export function ArtesanatoForm({
+  artesanato,
+  galeria = [],
+}: {
+  artesanato?: Artesanato;
+  galeria?: GaleriaItem[];
+}) {
   const [state, action, pending] = useActionState(salvarArtesanato, null);
   const [values, setValues] = useState({
     nome: artesanato?.nome ?? "",
     descricao: artesanato?.descricao ?? "",
     categoria: artesanato?.categoria ?? "",
-    preco: artesanato?.preco != null ? String(artesanato.preco) : "",
-    disponivel: artesanato ? String(artesanato.disponivel) : "true",
+    fonte: artesanato?.fonte ?? "",
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
@@ -48,10 +55,7 @@ export function ArtesanatoForm({ artesanato }: { artesanato?: Artesanato }) {
     setTouched((current) => ({ ...current, [name]: true }));
   }
 
-  const parsed = artesanatoSchema.safeParse({
-    ...values,
-    disponivel: values.disponivel === "true",
-  });
+  const parsed = artesanatoSchema.safeParse(values);
   const allErrors = parsed.success ? {} : fieldErrorsFrom(parsed.error);
   const errors = liveFieldErrors(allErrors, touched, Boolean(state?.error));
   const attempt = state?.attempt ?? 0;
@@ -117,39 +121,26 @@ export function ArtesanatoForm({ artesanato }: { artesanato?: Artesanato }) {
             </NativeSelect>
             {errors.categoria ? <FieldError>{errors.categoria}</FieldError> : null}
           </Field>
-          <Field data-invalid={Boolean(errors.preco) || undefined}>
-            <FieldLabel htmlFor="preco">Preço (R$)</FieldLabel>
+          <Field data-invalid={Boolean(errors.fonte) || undefined}>
+            <FieldLabel htmlFor="fonte">Fonte</FieldLabel>
             <Input
-              id="preco"
-              name="preco"
-              type="number"
-              min="0"
-              step="0.01"
-              value={values.preco}
-              aria-invalid={Boolean(errors.preco)}
-              onChange={(event) => change("preco", event.target.value)}
-              required
+              id="fonte"
+              name="fonte"
+              value={values.fonte}
+              maxLength={500}
+              placeholder="https://... ou nome da artesã / artesão"
+              aria-invalid={Boolean(errors.fonte)}
+              onChange={(event) => change("fonte", event.target.value)}
             />
-            {errors.preco ? <FieldError>{errors.preco}</FieldError> : null}
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="disponivel">Disponibilidade</FieldLabel>
-            <NativeSelect
-              id="disponivel"
-              name="disponivel"
-              className="w-full"
-              value={values.disponivel}
-              onChange={(event) => change("disponivel", event.target.value)}
-            >
-              <NativeSelectOption value="true">Disponível</NativeSelectOption>
-              <NativeSelectOption value="false">Indisponível</NativeSelectOption>
-            </NativeSelect>
+            <FieldDescription>Origem da informação. Link ou referência em texto.</FieldDescription>
+            {errors.fonte ? <FieldError>{errors.fonte}</FieldError> : null}
           </Field>
           <ImageField
             currentUrl={
               artesanato?.imagem ? getPublicAssetUrl(artesanato.imagem) : null
             }
           />
+          <GaleriaField imagens={galeria} />
           {general ? <FieldError>{general}</FieldError> : null}
           <div className="flex flex-wrap gap-2">
             <Button type="submit" disabled={pending}>
