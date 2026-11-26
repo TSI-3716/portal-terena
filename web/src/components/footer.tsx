@@ -4,7 +4,7 @@ import { FooterContextColumn } from "@/components/footer-context-column";
 import { Container } from "@/components/site-layout";
 import { Separator } from "@/components/ui/separator";
 import { getConfiguracao } from "@/lib/configuracao";
-import { navLinks } from "@/lib/nav";
+import { footerLinks } from "@/lib/nav";
 import { telefoneDigitos } from "@/lib/validation";
 
 export async function Footer() {
@@ -31,8 +31,8 @@ export async function Footer() {
           <h3 className="text-sm font-semibold tracking-wide text-primary">
             NAVEGAÇÃO
           </h3>
-          <ul className="space-y-1.5 text-sm text-muted-foreground">
-            {navLinks.slice(0, 6).map((link) => (
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+            {footerLinks.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className="hover:text-foreground">
                   {link.label}
