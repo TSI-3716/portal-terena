@@ -3,6 +3,8 @@ import type { FieldDef } from "@/lib/admin/fields";
 import { aldeiaHref } from "@/lib/conteudo";
 import { eventoStatus, projetoStatus, statusLabel } from "@/lib/database";
 import { formatDate } from "@/lib/format";
+import type { EntidadeGaleria } from "@/lib/galeria";
+import { situacaoProjeto, validarProjeto } from "@/lib/projetos";
 
 export type Row = Record<string, unknown>;
 
@@ -37,6 +39,10 @@ export type ResourceDef = {
   prepare?: (ctx: PrepareContext) => Promise<Row>;
   /** Mensagem quando a exclusão é barrada por chave estrangeira. */
   inUseMessage?: string;
+  /** Regras entre campos, depois da validação de cada campo. */
+  validate?: (data: Row) => Record<string, string>;
+  /** Aceita várias imagens (galeria) além da imagem de capa. */
+  galeria?: EntidadeGaleria;
 };
 
 const imagem = (description?: string): FieldDef => ({
@@ -46,6 +52,16 @@ const imagem = (description?: string): FieldDef => ({
   wide: true,
   description,
 });
+
+const fonte: FieldDef = {
+  name: "fonte",
+  label: "Fonte",
+  type: "text",
+  maxLength: 500,
+  wide: true,
+  placeholder: "https://... ou referência em texto",
+  description: "Origem da informação: link ou referência (livro, entrevista, instituição).",
+};
 
 const str = (row: Row, key: string) => {
   const value = row[key];
@@ -72,8 +88,8 @@ export const resources: readonly ResourceDef[] = [
     newLabel: "Nova aldeia",
     editLabel: "Editar aldeia",
     imageFolder: "aldeias",
+    galeria: "aldeia",
     orderBy: { column: "nome", ascending: true },
-    inUseMessage: "Esta aldeia tem notícias vinculadas. Exclua ou mova as notícias antes.",
     fields: [
       { name: "nome", label: "Nome", type: "text", required: true, maxLength: 150 },
       {
@@ -84,8 +100,14 @@ export const resources: readonly ResourceDef[] = [
         placeholder: "Sidrolândia - MS",
         description: "Use o padrão “Município - UF”: o valor aparece no mapa e no filtro.",
       },
-      { name: "data_fundacao", label: "Data de fundação", type: "date" },
+      {
+        name: "data_fundacao",
+        label: "Data de fundação",
+        type: "date",
+        description: "Opcional: quando a aldeia foi fundada. A data de cadastro é gravada sozinha.",
+      },
       { name: "descricao", label: "Descrição", type: "textarea", wide: true },
+      fonte,
       imagem(),
     ],
     primary: (row) => str(row, "nome") ?? "",
@@ -135,6 +157,7 @@ export const resources: readonly ResourceDef[] = [
     newLabel: "Novo evento",
     editLabel: "Editar evento",
     imageFolder: "eventos",
+    galeria: "evento",
     orderBy: { column: "data_evento", ascending: false },
     inUseMessage: "Este evento tem notícias vinculadas. Altere essas notícias antes de excluir.",
     fields: [
@@ -143,6 +166,7 @@ export const resources: readonly ResourceDef[] = [
       { name: "local", label: "Local", type: "text", maxLength: 200 },
       { name: "status", label: "Situação", type: "select", options: eventoStatus },
       { name: "descricao", label: "Descrição", type: "textarea", wide: true },
+      fonte,
       imagem(),
     ],
     primary: (row) => str(row, "titulo") ?? "",
@@ -151,6 +175,7 @@ export const resources: readonly ResourceDef[] = [
       const label = statusLabel(eventoStatus, str(row, "status"));
       return label ? { label, highlight: str(row, "status") === "agendado" } : undefined;
     },
+    publicHref: (row) => `/eventos/${str(row, "id_evento")}`,
   },
   {
     slug: "projetos",
@@ -160,23 +185,41 @@ export const resources: readonly ResourceDef[] = [
     newLabel: "Novo projeto",
     editLabel: "Editar projeto",
     imageFolder: "projetos",
+    galeria: "projeto",
     orderBy: { column: "titulo", ascending: true },
+    validate: validarProjeto,
     fields: [
       { name: "titulo", label: "Título", type: "text", required: true, maxLength: 200, wide: true },
-      { name: "status", label: "Situação", type: "select", options: projetoStatus },
+      {
+        name: "status",
+        label: "Situação",
+        type: "select",
+        options: projetoStatus,
+        description: "Sem data de término, o projeto aparece no portal como “Em andamento”.",
+      },
       { name: "data_inicio", label: "Início", type: "date" },
-      { name: "data_fim", label: "Término", type: "date" },
+      {
+        name: "data_fim",
+        label: "Término",
+        type: "date",
+        description: "Deixe vazio enquanto o projeto estiver em andamento.",
+      },
       { name: "objetivo", label: "Objetivo", type: "textarea", wide: true },
       { name: "descricao", label: "Descrição", type: "textarea", wide: true },
+      fonte,
       imagem(),
     ],
     primary: (row) => str(row, "titulo") ?? "",
     secondary: (row) => str(row, "objetivo"),
     badge: (row) => {
-      const label = statusLabel(projetoStatus, str(row, "status"));
-      return label ? { label, highlight: str(row, "status") === "em_andamento" } : undefined;
+      const situacao = situacaoProjeto({
+        status: str(row, "status") ?? null,
+        data_fim: str(row, "data_fim") ?? null,
+      });
+      const label = statusLabel(projetoStatus, situacao);
+      return label ? { label, highlight: situacao === "em_andamento" } : undefined;
     },
-    publicHref: () => "/projetos",
+    publicHref: (row) => `/projetos/${str(row, "id_projeto")}`,
   },
   {
     slug: "tipos-conteudo",
@@ -185,13 +228,30 @@ export const resources: readonly ResourceDef[] = [
     title: "Tipos de conteúdo",
     newLabel: "Novo tipo",
     editLabel: "Editar tipo",
+    listSelect: "*, pai:tipo_conteudo!fk_tipo_conteudo_pai(nome)",
     orderBy: { column: "nome", ascending: true },
+    inUseMessage:
+      "Este tipo tem conteúdos ou subcategorias vinculados. Mova ou exclua esses itens antes.",
     fields: [
       { name: "nome", label: "Nome", type: "text", required: true, maxLength: 100 },
+      {
+        name: "id_tipo_pai",
+        label: "Subcategoria de",
+        type: "reference",
+        table: "tipo_conteudo",
+        valueColumn: "id_tipo",
+        labelColumn: "nome",
+        description:
+          "Ex.: escolha “Cultura” para criar uma nova categoria dentro de Cultura. Ela aparece no painel e no portal.",
+      },
       { name: "descricao", label: "Descrição", type: "textarea", wide: true },
     ],
     primary: (row) => str(row, "nome") ?? "",
-    secondary: (row) => str(row, "descricao"),
+    secondary: (row) =>
+      join(
+        joined(row, "pai", "nome") ? `Dentro de ${joined(row, "pai", "nome")}` : undefined,
+        str(row, "descricao"),
+      ),
   },
 ];
 
