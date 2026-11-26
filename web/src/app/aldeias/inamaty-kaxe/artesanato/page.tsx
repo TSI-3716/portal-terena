@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { SiteCard } from "@/components/site-card";
 import { listArtesanatosPublicos } from "@/lib/artesanato";
@@ -18,7 +17,7 @@ export default async function InamatyArtesanatoPage() {
       />
       {artesanatos.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Nenhum artesanato disponível no momento.
+          Nenhum artesanato cadastrado no momento.
         </p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -26,9 +25,9 @@ export default async function InamatyArtesanatoPage() {
             <SiteCard
               key={artesanato.id_artesanato}
               search={`${artesanato.nome} ${artesanato.categoria}`}
-              meta={`${artesanato.categoria} · R$ ${Number(artesanato.preco).toFixed(2).replace(".", ",")}`}
+              meta={artesanato.categoria}
               title={artesanato.nome}
-              description={artesanato.categoria}
+              href={`/artesanato/${artesanato.id_artesanato}`}
               imageSrc={
                 artesanato.imagem
                   ? getPublicAssetUrl(artesanato.imagem)
