@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { GaleriaField, type GaleriaItem } from "@/components/admin/galeria-field";
 import { ImageField } from "@/components/admin/image-field";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ export function ResourceForm({
   options,
   imageUrl,
   cancelHref,
+  galeria,
 }: {
   action: (state: ResourceFormState, formData: FormData) => Promise<ResourceFormState>;
   fields: readonly FieldDef[];
@@ -50,6 +52,8 @@ export function ResourceForm({
   options: Record<string, Option[]>;
   imageUrl?: string | null;
   cancelHref: string;
+  /** Imagens atuais da galeria; undefined quando o cadastro não tem galeria. */
+  galeria?: GaleriaItem[];
 }) {
   const [state, formAction, pending] = useActionState(action, null);
   const [local, setLocal] = useState<FormValues | null>(null);
@@ -66,7 +70,8 @@ export function ResourceForm({
   const errors = { ...liveFieldErrors(parsed.errors, touched, showAll) };
   if (showAll && state?.fieldErrors) {
     for (const field of fields) {
-      if (field.type === "image" && state.fieldErrors[field.name]) {
+      // Imagem e regras entre campos (ex.: término do projeto) só o servidor valida.
+      if (state.fieldErrors[field.name] && !errors[field.name]) {
         errors[field.name] = state.fieldErrors[field.name];
       }
     }
@@ -82,9 +87,17 @@ export function ResourceForm({
 
           if (field.type === "image") {
             return (
-              <div key={field.name} className={className}>
+              <div key={field.name} className={cn(className, "space-y-5")}>
                 <ImageField name={field.name} currentUrl={imageUrl} />
                 {error ? <FieldError>{error}</FieldError> : null}
+                {galeria ? (
+                  <>
+                    <GaleriaField imagens={galeria} />
+                    {showAll && state?.fieldErrors.galeria ? (
+                      <FieldError>{state.fieldErrors.galeria}</FieldError>
+                    ) : null}
+                  </>
+                ) : null}
               </div>
             );
           }
@@ -178,7 +191,8 @@ export function ResourceForm({
         {state?.error &&
         !(
           state.error === "Verifique os campos destacados." &&
-          Object.keys(parsed.errors).length === 0
+          Object.keys(errors).length === 0 &&
+          !state.fieldErrors.galeria
         ) ? (
           <Alert variant="destructive" className="sm:col-span-2">
             <AlertDescription>{state.error}</AlertDescription>
