@@ -104,8 +104,18 @@ export const noticiaStatusLabel = {
   publicado: "Publicado",
 } as const;
 
+const fonteSchema = z
+  .string()
+  .trim()
+  .max(500, "Use no máximo 500 caracteres");
+
+const idListaSchema = z.array(z.string().regex(/^[1-9]\d*$/, "Aldeia inválida"));
+
+const dataSchema = (mensagem: string) =>
+  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, mensagem);
+
 export const noticiaSchema = z.object({
-  titulo: z.string().trim().min(3, "Informe o título"),
+  titulo: z.string().trim().min(3, "Informe o título").max(250, "Use no máximo 250 caracteres"),
   resumo: z
     .string()
     .trim()
@@ -114,15 +124,15 @@ export const noticiaSchema = z.object({
     .string()
     .trim()
     .min(10, "Escreva o conteúdo com pelo menos 10 caracteres"),
-  data_publicacao: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Informe a data de publicação"),
+  data_publicacao: dataSchema("Informe a data de publicação"),
   status: z.string().refine(
     (value): value is (typeof noticiaStatuses)[number] =>
       value === "rascunho" || value === "publicado",
     { message: "Selecione o status" },
   ),
-  id_aldeia: z.string().regex(/^[1-9]\d*$/, "Selecione a aldeia"),
+  fonte: fonteSchema,
+  /** Zero, uma ou várias aldeias. Vazio = notícia geral do povo Terena. */
+  id_aldeias: idListaSchema,
 });
 
 export type NoticiaInput = z.infer<typeof noticiaSchema>;
@@ -134,8 +144,34 @@ export const artesanatoSchema = z.object({
     .trim()
     .min(10, "Escreva uma descrição com pelo menos 10 caracteres"),
   categoria: z.string().trim().min(1, "Informe a categoria"),
-  preco: z.coerce.number().min(0, "O preço não pode ser negativo"),
-  disponivel: z.coerce.boolean(),
+  fonte: fonteSchema,
 });
 
 export type ArtesanatoInput = z.infer<typeof artesanatoSchema>;
+
+/** Conteúdos de Cultura e Juventude (tabela conteudo_aldeia). */
+export const conteudoSchema = z.object({
+  titulo: z.string().trim().min(3, "Informe o título").max(200, "Use no máximo 200 caracteres"),
+  id_tipo: z.string().regex(/^[1-9]\d*$/, "Selecione a categoria"),
+  resumo: z
+    .string()
+    .trim()
+    .min(10, "Escreva um resumo com pelo menos 10 caracteres"),
+  descricao: z
+    .string()
+    .trim()
+    .min(10, "Escreva o conteúdo com pelo menos 10 caracteres"),
+  data_publicacao: dataSchema("Informe a data de publicação"),
+  status: z.string().refine(
+    (value): value is (typeof noticiaStatuses)[number] =>
+      value === "rascunho" || value === "publicado",
+    { message: "Selecione o status" },
+  ),
+  fonte: fonteSchema,
+  id_aldeia: z.string().refine((value) => value === "" || /^[1-9]\d*$/.test(value), {
+    message: "Aldeia inválida",
+  }),
+  destaque: z.boolean(),
+});
+
+export type ConteudoInput = z.infer<typeof conteudoSchema>;
