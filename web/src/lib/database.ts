@@ -10,6 +10,9 @@ export type Aldeia = {
   localizacao: string | null;
   imagem: string | null;
   data_fundacao: string | null;
+  fonte?: string | null;
+  criado_em?: string;
+  atualizado_em?: string;
 };
 
 export type ContatoAldeia = {
@@ -29,8 +32,10 @@ export type Artesanato = {
   descricao: string | null;
   categoria: string | null;
   imagem: string | null;
-  preco: number | null;
-  disponivel: boolean;
+  /** Colunas antigas, mantidas no banco; não fazem mais parte do cadastro. */
+  preco?: number | null;
+  disponivel?: boolean;
+  fonte?: string | null;
 };
 
 export type Evento = {
@@ -41,6 +46,7 @@ export type Evento = {
   local: string | null;
   imagem: string | null;
   status: string | null;
+  fonte?: string | null;
 };
 
 export type Projeto = {
@@ -52,6 +58,7 @@ export type Projeto = {
   data_fim: string | null;
   status: string | null;
   imagem: string | null;
+  fonte?: string | null;
 };
 
 export type Noticia = {
@@ -65,13 +72,38 @@ export type Noticia = {
   /** Id do usuário no Auth (`auth.users.id`). */
   id_usuario: string;
   id_evento: number | null;
-  id_aldeia: number;
+  /** Vínculo antigo (uma aldeia). O vínculo atual fica em noticia_aldeia. */
+  id_aldeia: number | null;
+  fonte: string | null;
+  criado_em?: string;
+  atualizado_em?: string;
 };
 
 export type TipoConteudo = {
   id_tipo: number;
   nome: string;
   descricao: string | null;
+  slug: string | null;
+  id_tipo_pai: number | null;
+  ordem: number;
+};
+
+/** Conteúdo de Cultura e Juventude (tabela conteudo_aldeia). */
+export type Conteudo = {
+  id_conteudo: number;
+  titulo: string;
+  resumo: string | null;
+  /** Texto completo. */
+  descricao: string | null;
+  imagem: string | null;
+  data_publicacao: string | null;
+  destaque: boolean;
+  status: string;
+  fonte: string | null;
+  id_tipo: number;
+  id_aldeia: number | null;
+  criado_em?: string;
+  atualizado_em?: string;
 };
 
 /** Vocabulário das colunas "status" (varchar livre no banco). */
