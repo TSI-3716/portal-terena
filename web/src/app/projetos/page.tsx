@@ -1,27 +1,33 @@
 import type { Metadata } from "next";
-import { CircleCheck, Folder, LayoutGrid, Sprout } from "lucide-react";
-import { FilterBar } from "@/components/filter-bar";
+import { BuscaForm } from "@/components/busca-form";
 import { Hero } from "@/components/hero";
+import { Listagem, Vazio } from "@/components/listagem";
 import { ProjetoCard } from "@/components/projeto-card";
-import { PageSection } from "@/components/site-layout";
-import { Tile } from "@/components/tile";
-import { UrlFilter } from "@/components/url-filter";
+import { CardGrid } from "@/components/site-card";
 import { listProjetos } from "@/lib/conteudo";
 import { projetoStatus, statusLabel } from "@/lib/database";
 import { staticImage } from "@/lib/images";
+import { contarSituacoes, situacaoProjeto } from "@/lib/projetos";
+import { destaquesRotativos } from "@/lib/text";
 
 export const metadata: Metadata = { title: "Projetos Terena" };
 
 export default async function ProjetosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ situacao?: string }>;
+  searchParams: Promise<{ q?: string; situacao?: string }>;
 }) {
-  const { situacao } = await searchParams;
-  const filtro = projetoStatus.some((status) => status.value === situacao)
-    ? situacao
-    : undefined;
-  const projetos = await listProjetos(filtro);
+  const { q = "", situacao } = await searchParams;
+  const busca = q.trim();
+  const filtro = projetoStatus.find((status) => status.value === situacao)?.value;
+
+  const encontrados = await listProjetos(busca);
+  const contagem = contarSituacoes(encontrados);
+  const projetos = filtro
+    ? encontrados.filter((projeto) => situacaoProjeto(projeto) === filtro)
+    : encontrados;
+  const filtrando = Boolean(busca || filtro);
+  const destaques = filtrando ? [] : destaquesRotativos(encontrados, 3);
 
   return (
     <>
@@ -31,60 +37,52 @@ export default async function ProjetosPage({
         description="Conheça iniciativas que fortalecem nossas aldeias, valorizam nossa cultura e promovem desenvolvimento sustentável."
         imageSrc={staticImage("projetos_hero")}
       />
-      <PageSection>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Tile
-            href="/projetos#lista"
-            icon={<LayoutGrid className="size-5" />}
-            title="Todos os Projetos"
-            description="Veja todos os projetos desenvolvidos nas aldeias."
-          />
-          <Tile
-            href="/projetos?situacao=em_andamento#lista"
-            icon={<Sprout className="size-5" />}
-            title="Em Andamento"
-            description="Acompanhe iniciativas que estão em execução."
-          />
-          <Tile
-            href="/projetos?situacao=concluido#lista"
-            icon={<CircleCheck className="size-5" />}
-            title="Concluídos"
-            description="Conheça projetos já realizados com sucesso."
-          />
-          <Tile
-            href="/projetos?situacao=planejado#lista"
-            icon={<Folder className="size-5" />}
-            title="Planejados"
-            description="Iniciativas que ainda vão começar."
-          />
-        </div>
-      </PageSection>
-      <PageSection muted>
-        <div id="lista" className="scroll-mt-24">
-          <FilterBar className="lg:grid-cols-4">
-            <UrlFilter
-              label="Situação"
-              param="situacao"
-              value={filtro}
-              allLabel="Todas as situações"
-              options={projetoStatus}
-            />
-          </FilterBar>
-          {projetos.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {filtro
-                ? `Nenhum projeto com a situação “${statusLabel(projetoStatus, filtro)}”.`
-                : "Nenhum projeto cadastrado ainda."}
-            </p>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-3">
-              {projetos.map((projeto) => (
+      <Listagem
+        destaquesTitulo="Projetos em destaque"
+        destaques={
+          destaques.length > 0 ? (
+            <CardGrid>
+              {destaques.map((projeto) => (
                 <ProjetoCard key={projeto.id_projeto} projeto={projeto} />
               ))}
-            </div>
-          )}
-        </div>
-      </PageSection>
+            </CardGrid>
+          ) : undefined
+        }
+        titulo={filtrando ? "Resultado da consulta" : "Todos os projetos"}
+        busca={
+          <BuscaForm
+            action="/projetos"
+            q={busca}
+            label="Buscar projeto"
+            filtro={{
+              param: "situacao",
+              label: "Situação",
+              value: filtro,
+              allLabel: `Todas as situações (${encontrados.length})`,
+              options: projetoStatus.map((status) => ({
+                value: status.value,
+                label: `${status.label} (${contagem[status.value]})`,
+              })),
+            }}
+          />
+        }
+      >
+        {projetos.length === 0 ? (
+          <Vazio>
+            {filtro
+              ? `Nenhum projeto com a situação “${statusLabel(projetoStatus, filtro)}”.`
+              : busca
+                ? "Nenhum projeto encontrado. Tente outra palavra-chave."
+                : "Nenhum projeto cadastrado ainda."}
+          </Vazio>
+        ) : (
+          <CardGrid>
+            {projetos.map((projeto) => (
+              <ProjetoCard key={projeto.id_projeto} projeto={projeto} />
+            ))}
+          </CardGrid>
+        )}
+      </Listagem>
     </>
   );
 }
