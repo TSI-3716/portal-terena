@@ -2,6 +2,9 @@
 -- (exportada pela equipe em 06/11/2026). Serve de documentação; não execute.
 -- noticia.id_usuario é o usuário do Auth (auth.users.id).
 -- projeto e artesanato não têm coluna id_aldeia; projeto se liga a aldeia por projeto_aldeia.
+-- ATENÇÃO: retrato de 06/11/2026. A migration 20261126120000_ajustes_relatorio_celeny.sql
+-- acrescenta noticia_aldeia (N:N), imagem_galeria, colunas fonte/criado_em/atualizado_em,
+-- slug/id_tipo_pai/ordem em tipo_conteudo e resumo/status em conteudo_aldeia.
 
 CREATE TABLE public.evento (
   id_evento integer GENERATED ALWAYS AS IDENTITY NOT NULL,
