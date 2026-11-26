@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { NoticiaList } from "@/components/noticia-list";
-import { SiteCard } from "@/components/site-card";
+import { CardGrid, SiteCard } from "@/components/site-card";
 import { PageSection, SectionHeader } from "@/components/site-layout";
 import { Button } from "@/components/ui/button";
 import { VillageMap } from "@/components/village-map-client";
@@ -19,21 +19,21 @@ export default async function HomePage() {
             eyebrow: "Portal Terena",
             title: "Povo Terena",
             description: "Conheça nossa história, cultura e território.",
-            imageSrc: "/imagens/home_hero.jpg",
+            imageSrc: staticImage("home_hero"),
             imageAlt: "Povo Terena",
           },
           {
             eyebrow: "Nossa cultura",
             title: "Tradição e identidade",
             description: "Conheça a cultura e as tradições do povo Terena.",
-            imageSrc: "/imagens/cultura_2.jpg",
+            imageSrc: staticImage("cultura_2"),
             imageAlt: "Cultura Terena",
           },
           {
             eyebrow: "Nossas aldeias",
             title: "Território e comunidade",
             description: "Conheça as aldeias e comunidades Terena.",
-            imageSrc: "/imagens/aldeias_2.jpg",
+            imageSrc: staticImage("aldeias_2"),
             imageAlt: "Aldeia Terena",
           },
         ]}
@@ -62,7 +62,7 @@ export default async function HomePage() {
             </Button>
           }
         />
-        <div className="grid gap-4 md:grid-cols-3">
+        <CardGrid>
           <SiteCard
             search="dança bate pau cultura"
             title="Dança do Bate-Pau"
@@ -83,14 +83,14 @@ export default async function HomePage() {
           />
           <SiteCard
             search="artesanato terena"
-            title="Feira & Artesanato"
+            title="Artesanato Terena"
             imageSrc={staticImage("feira_p1")}
-            imageAlt="Feira e artesanato"
+            imageAlt="Artesanato Terena"
             description="Valorize o trabalho das artesãs e artesãos Terena."
-            href="/feira"
+            href="/artesanato"
             hrefLabel="Conheça"
           />
-        </div>
+        </CardGrid>
       </PageSection>
       {noticias.length > 0 ? (
         <PageSection>
