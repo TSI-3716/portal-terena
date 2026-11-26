@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AldeiaContatos } from "@/components/aldeia-contatos";
 import { ContentCard, InfoList } from "@/components/content-blocks";
+import { FonteValor, GaleriaPublica } from "@/components/conteudo-detalhe";
 import { Hero } from "@/components/hero";
 import { NoticiaList } from "@/components/noticia-list";
 import { PageSection, SectionHeader } from "@/components/site-layout";
@@ -14,6 +15,7 @@ import {
   listContatosAldeia,
 } from "@/lib/conteudo";
 import { formatDate } from "@/lib/format";
+import { listGaleria } from "@/lib/galeria";
 import { listNoticiasPublicas } from "@/lib/noticias";
 import { resolveImageUrl } from "@/lib/storage";
 
@@ -31,9 +33,10 @@ export default async function AldeiaPage({ params }: Props) {
   if (!aldeia) notFound();
   if (aldeiaHref(aldeia) === INAMATY_HREF) redirect(INAMATY_HREF);
 
-  const [contatos, noticias] = await Promise.all([
+  const [contatos, noticias, galeria] = await Promise.all([
     listContatosAldeia(aldeia.id_aldeia),
-    listNoticiasPublicas("", 6),
+    listNoticiasPublicas("", 6, aldeia.id_aldeia),
+    listGaleria("aldeia", aldeia.id_aldeia),
   ]);
 
   return (
@@ -63,11 +66,19 @@ export default async function AldeiaPage({ params }: Props) {
                 ...(aldeia.data_fundacao
                   ? [{ label: "Fundação", value: formatDate(aldeia.data_fundacao) }]
                   : []),
+                ...(aldeia.fonte
+                  ? [{ label: "Fonte", value: <FonteValor fonte={aldeia.fonte} /> }]
+                  : []),
               ]}
             />
           </ContentCard>
         </div>
       </PageSection>
+      {galeria.length > 0 ? (
+        <PageSection className="pt-0">
+          <GaleriaPublica imagens={galeria} titulo={aldeia.nome} />
+        </PageSection>
+      ) : null}
       {contatos.length > 0 ? (
         <PageSection className="pt-0">
           <SectionHeader title="Contato" />
