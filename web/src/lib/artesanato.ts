@@ -13,20 +13,20 @@ export function isArtesanatoId(id: string) {
   return /^[1-9]\d*$/.test(id) || z.uuid().safeParse(id).success;
 }
 
-export type Artesanato = ArtesanatoInput & {
+export type Artesanato = Omit<ArtesanatoInput, "fonte"> & {
   id_artesanato: number | string;
   imagem: string | null;
+  fonte: string | null;
 };
 
 const listColumns =
-  "id_artesanato, nome, categoria, preco, imagem, disponivel";
+  "id_artesanato, nome, categoria, imagem, fonte";
 
 export async function listArtesanatosPublicos() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("artesanato")
     .select(listColumns)
-    .eq("disponivel", true)
     .order("nome", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -41,7 +41,6 @@ export async function getArtesanatoPublico(id: string) {
     .from("artesanato")
     .select("*")
     .eq("id_artesanato", id)
-    .eq("disponivel", true)
     .maybeSingle();
 
   if (error) throw new Error(error.message);
