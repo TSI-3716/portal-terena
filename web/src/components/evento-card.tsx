@@ -11,15 +11,15 @@ export function EventoCard({ evento }: { evento: Evento }) {
       search={`${evento.titulo} ${evento.descricao ?? ""} ${evento.local ?? ""}`}
       meta={formatDate(evento.data_evento) || undefined}
       title={evento.titulo}
-      description={evento.descricao ?? ""}
+      description={evento.descricao}
+      href={`/eventos/${evento.id_evento}`}
       imageSrc={resolveImageUrl(evento.imagem)}
       imageAlt={evento.titulo}
-      hrefLabel="Ver detalhes"
       details={
         evento.local || situacao ? (
           <>
             {evento.local ? (
-              <p>
+              <p className="line-clamp-1">
                 <strong className="text-primary">Local:</strong> {evento.local}
               </p>
             ) : null}
