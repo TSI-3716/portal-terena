@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
+import { BuscaForm } from "@/components/busca-form";
 import { Hero } from "@/components/hero";
 import { NoticiaList } from "@/components/noticia-list";
 import { PageSection, SectionHeader } from "@/components/site-layout";
-import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { listAldeias } from "@/lib/conteudo";
 import { staticImage } from "@/lib/images";
 import { listNoticiasPublicas } from "@/lib/noticias";
 
@@ -15,13 +14,17 @@ const DESTAQUES = 2;
 export default async function NoticiasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; aldeia?: string }>;
 }) {
-  const { q = "" } = await searchParams;
+  const { q = "", aldeia = "" } = await searchParams;
   const busca = q.trim();
-  const noticias = await listNoticiasPublicas(busca);
-  const destaques = busca ? [] : noticias.slice(0, DESTAQUES);
-  const demais = busca ? noticias : noticias.slice(DESTAQUES);
+  const aldeias = await listAldeias();
+  const filtroAldeia = aldeias.find((item) => String(item.id_aldeia) === aldeia);
+  const filtrando = Boolean(busca || filtroAldeia);
+
+  const noticias = await listNoticiasPublicas(busca, undefined, filtroAldeia?.id_aldeia);
+  const destaques = filtrando ? [] : noticias.slice(0, DESTAQUES);
+  const demais = filtrando ? noticias : noticias.slice(DESTAQUES);
 
   return (
     <>
@@ -38,36 +41,37 @@ export default async function NoticiasPage({
         </PageSection>
       ) : null}
       <PageSection muted={destaques.length > 0}>
-        {busca || destaques.length === 0 ? (
-          <SectionHeader
-            title={busca ? `Resultados para “${busca}”` : "Notícias publicadas"}
-          />
-        ) : null}
-        <form className="mb-6 flex max-w-md items-end gap-2" role="search">
-          <Field>
-            <FieldLabel htmlFor="buscar-noticia">Buscar notícia</FieldLabel>
-            <Input
-              id="buscar-noticia"
-              name="q"
-              type="search"
-              defaultValue={busca}
-              placeholder="Palavra-chave"
-            />
-          </Field>
-          <Button type="submit" variant="outline">
-            Buscar
-          </Button>
-        </form>
-        {busca || demais.length > 0 || destaques.length === 0 ? (
-          <NoticiaList
-            noticias={demais}
-            empty={
-              busca
-                ? "Nenhuma notícia encontrada. Tente outra palavra-chave."
+        <SectionHeader
+          title={
+            filtrando
+              ? `Resultados${busca ? ` para “${busca}”` : ""}${filtroAldeia ? ` — ${filtroAldeia.nome}` : ""}`
+              : destaques.length > 0
+                ? "Mais notícias"
+                : "Notícias publicadas"
+          }
+        />
+        <BuscaForm
+          action="/noticias"
+          q={busca}
+          label="Buscar notícia"
+          filtro={{
+            param: "aldeia",
+            label: "Aldeia",
+            value: filtroAldeia ? String(filtroAldeia.id_aldeia) : "",
+            allLabel: "Todas as notícias",
+            options: aldeias.map((item) => ({ value: String(item.id_aldeia), label: item.nome })),
+          }}
+        />
+        <NoticiaList
+          noticias={demais}
+          empty={
+            filtrando
+              ? "Nenhuma notícia encontrada. Tente outra palavra-chave."
+              : destaques.length > 0
+                ? "Não há outras notícias além dos destaques."
                 : "Nenhuma notícia publicada ainda."
-            }
-          />
-        ) : null}
+          }
+        />
       </PageSection>
     </>
   );

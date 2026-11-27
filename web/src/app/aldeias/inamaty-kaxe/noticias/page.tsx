@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { NoticiaList } from "@/components/noticia-list";
 import { PageHeading, PageSection } from "@/components/site-layout";
+import { getInamaty } from "@/lib/conteudo";
 import { listNoticiasPublicas } from "@/lib/noticias";
 
 export const metadata: Metadata = { title: "Notícias da Aldeia | Inamaty Kaxé" };
 
 export default async function InamatyNoticiasPage() {
-  const noticias = await listNoticiasPublicas();
+  const inamaty = await getInamaty();
+  const noticias = inamaty ? await listNoticiasPublicas("", undefined, inamaty.id_aldeia) : [];
 
   return (
     <>

@@ -44,7 +44,10 @@ export default async function AdminNoticiasPage({
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-primary">{noticia.titulo}</p>
                 <p className="text-sm text-muted-foreground">
-                  {formatDate(noticia.data_publicacao)}
+                  {formatDate(noticia.data_publicacao)} ·{" "}
+                  {noticia.aldeias.length > 0
+                    ? noticia.aldeias.map((aldeia) => aldeia.nome).join(", ")
+                    : "Geral (povo Terena)"}
                 </p>
               </div>
               <Badge

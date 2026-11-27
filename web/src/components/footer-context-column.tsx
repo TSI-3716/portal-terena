@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { inamatyFooterLinks } from "@/lib/nav";
-
-const culturaItems = [
-  "Memória Viva / Anciãos",
-  "História Terena",
-  "Língua Terena",
-  "Tradições e Saberes",
-  "Calendário Cultural",
-];
+import { culturaLinks, inamatyFooterLinks } from "@/lib/nav";
 
 /**
  * Terceira coluna do rodapé: nas páginas da Inamaty Kaxé mostra os atalhos
@@ -23,18 +15,22 @@ export function FooterContextColumn() {
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-semibold tracking-wide text-primary">
-        {inamaty ? "INAMATY KAXÉ" : "CULTURA"}
+        {inamaty ? (
+          "INAMATY KAXÉ"
+        ) : (
+          <Link href="/cultura" className="hover:underline">
+            CULTURA
+          </Link>
+        )}
       </h3>
       <ul className="space-y-1.5 text-sm text-muted-foreground">
-        {inamaty
-          ? inamatyFooterLinks.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="hover:text-foreground">
-                  {link.label}
-                </Link>
-              </li>
-            ))
-          : culturaItems.map((item) => <li key={item}>{item}</li>)}
+        {(inamaty ? inamatyFooterLinks : culturaLinks).map((link) => (
+          <li key={link.href}>
+            <Link href={link.href} className="hover:text-foreground">
+              {link.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

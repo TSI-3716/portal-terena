@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { excluirRegistro, salvarRegistro } from "@/app/admin/[recurso]/actions";
+import { Carimbos } from "@/components/admin/carimbos";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { ResourceForm } from "@/components/admin/resource-form";
 import { PageHeading } from "@/components/site-layout";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { type FormValues, toFormValue } from "@/lib/admin/fields";
 import { getRow, loadReferenceOptions } from "@/lib/admin/repository";
 import { getResource, parseId } from "@/lib/admin/resources";
+import { listGaleria } from "@/lib/galeria";
 import { resolveImageUrl } from "@/lib/storage";
 
 type Props = {
@@ -29,9 +31,10 @@ export default async function EditarRegistroPage({ params, searchParams }: Props
   const id = parseId(rawId);
   if (!resource || !id) notFound();
 
-  const [row, options] = await Promise.all([
+  const [row, options, galeria] = await Promise.all([
     getRow(resource, id),
     loadReferenceOptions(resource),
+    resource.galeria ? listGaleria(resource.galeria, id) : Promise.resolve(undefined),
   ]);
   if (!row) notFound();
 
@@ -56,13 +59,15 @@ export default async function EditarRegistroPage({ params, searchParams }: Props
         ) : null}
       </div>
 
+      <Carimbos criadoEm={row.criado_em} atualizadoEm={row.atualizado_em} />
+
       {erro ? (
         <Alert variant="destructive" className="mb-6 max-w-3xl">
           <AlertDescription>
             {erro === "em-uso"
               ? (resource.inUseMessage ??
                 "Este registro está vinculado a outros cadastros e não pode ser excluído.")
-              : "Não foi possível excluir. Tente novamente."}
+              : "Não foi possível excluir. O registro continua cadastrado; tente novamente ou veja os logs."}
           </AlertDescription>
         </Alert>
       ) : null}
@@ -74,6 +79,7 @@ export default async function EditarRegistroPage({ params, searchParams }: Props
         options={options}
         imageUrl={typeof imageValue === "string" ? resolveImageUrl(imageValue) : null}
         cancelHref={`/admin/${resource.slug}`}
+        galeria={galeria}
       />
       <div className="mt-4">
         <ConfirmButton

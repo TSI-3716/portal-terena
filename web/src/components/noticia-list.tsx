@@ -1,6 +1,6 @@
-import { SiteCard } from "@/components/site-card";
+import { CardGrid, SiteCard } from "@/components/site-card";
 import { formatDate } from "@/lib/format";
-import type { Noticia } from "@/lib/noticias";
+import type { NoticiaResumo } from "@/lib/noticias";
 import { resolveImageUrl } from "@/lib/storage";
 
 export function NoticiaList({
@@ -8,7 +8,7 @@ export function NoticiaList({
   empty = "Nenhuma notícia publicada.",
   columns = 3,
 }: {
-  noticias: Omit<Noticia, "conteudo">[];
+  noticias: NoticiaResumo[];
   empty?: string;
   columns?: 2 | 3;
 }) {
@@ -17,26 +17,29 @@ export function NoticiaList({
   }
 
   return (
-    <div
-      className={
-        columns === 2
-          ? "grid gap-4 md:grid-cols-2"
-          : "grid gap-4 md:grid-cols-2 xl:grid-cols-3"
-      }
-    >
+    <CardGrid columns={columns}>
       {noticias.map((noticia) => (
         <SiteCard
           key={noticia.id_noticia}
           search={`${noticia.titulo} ${noticia.resumo}`}
-          meta={formatDate(noticia.data_publicacao)}
+          meta={formatDate(noticia.data_publicacao) || undefined}
           title={noticia.titulo}
           description={noticia.resumo}
           href={`/noticias/${noticia.id_noticia}`}
-          hrefLabel="Ler notícia"
           imageSrc={resolveImageUrl(noticia.imagem)}
           imageAlt={noticia.titulo}
+          details={
+            noticia.aldeias.length > 0 ? (
+              <p className="line-clamp-1">
+                <strong className="text-primary">
+                  {noticia.aldeias.length > 1 ? "Aldeias" : "Aldeia"}:
+                </strong>{" "}
+                {noticia.aldeias.map((aldeia) => aldeia.nome).join(", ")}
+              </p>
+            ) : undefined
+          }
         />
       ))}
-    </div>
+    </CardGrid>
   );
 }

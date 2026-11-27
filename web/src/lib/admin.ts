@@ -1,7 +1,7 @@
 /**
  * Menu do painel. Lista estática (sem imports) porque também é usada pelo
  * menu lateral, que roda no navegador.
- * Notícias e artesanato continuam nos cadastros próprios (id uuid).
+ * Notícias, artesanato, cultura e juventude têm telas próprias.
  * Os demais slugs batem com lib/admin/resources.ts.
  */
 export const adminSections = [
@@ -9,6 +9,16 @@ export const adminSections = [
     href: "/admin/noticias",
     title: "Notícias",
     description: "Publicar, editar e remover as notícias do portal.",
+  },
+  {
+    href: "/admin/cultura",
+    title: "Cultura",
+    description: "Memória Viva, História, Língua, Tradições e Saberes e Calendário Cultural.",
+  },
+  {
+    href: "/admin/juventude",
+    title: "Juventude",
+    description: "Publicações da juventude Terena, com imagens, fonte e data.",
   },
   {
     href: "/admin/mensagens",
@@ -38,12 +48,12 @@ export const adminSections = [
   {
     href: "/admin/artesanato",
     title: "Artesanato",
-    description: "Peças da Feira & Artesanato, com categoria e preço.",
+    description: "Peças de artesanato Terena, com categoria, fotos e fonte.",
   },
   {
     href: "/admin/tipos-conteudo",
     title: "Tipos de conteúdo",
-    description: "Classificação geral dos conteúdos do portal.",
+    description: "Classificação dos conteúdos e subcategorias (ex.: as categorias da Cultura).",
   },
   {
     href: "/admin/configuracoes",

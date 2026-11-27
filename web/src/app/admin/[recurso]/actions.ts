@@ -7,6 +7,7 @@ import { parseFormData } from "@/lib/admin/parse";
 import { getResource } from "@/lib/admin/resources";
 import { requireUser } from "@/lib/auth";
 import { dbErrorCode, describeDbError } from "@/lib/db-error";
+import { listGaleria, readGaleriaFiles, removerArquivos, salvarGaleria } from "@/lib/galeria";
 import { registrarErroDb } from "@/lib/log-erro";
 import {
   readImageFile,
@@ -36,12 +37,18 @@ export async function salvarRegistro(
     const imageError = validateImageFile(file);
     if (imageError) errors[imageField.name] = imageError;
   }
+  if (resource.validate && Object.keys(errors).length === 0) {
+    Object.assign(errors, resource.validate(data));
+  }
+  const galeria = resource.galeria ? readGaleriaFiles(formData) : { error: null, files: [] };
+  if (galeria.error) errors.galeria = galeria.error;
 
   if (Object.keys(errors).length > 0) {
     return { error: "Verifique os campos destacados.", fieldErrors: errors, values, attempt };
   }
 
   let uploaded: string | null = null;
+  let savedId: number;
 
   try {
     let payload = resource.prepare
@@ -71,9 +78,19 @@ export async function salvarRegistro(
       if (uploaded && typeof previousImage === "string" && previousImage !== uploaded) {
         await removeImage(supabase, previousImage);
       }
+      savedId = id;
     } else {
-      const { error } = await supabase.from(resource.table).insert(payload);
+      const { data: inserted, error } = await supabase
+        .from(resource.table)
+        .insert(payload)
+        .select(resource.idColumn)
+        .single();
       if (error) throw error;
+      savedId = (inserted as unknown as Record<string, number>)[resource.idColumn];
+    }
+
+    if (resource.galeria) {
+      await salvarGaleria(supabase, resource.galeria, savedId, formData, galeria.files);
     }
   } catch (error) {
     if (uploaded) await removeImage(supabase, uploaded);
@@ -95,28 +112,33 @@ export async function excluirRegistro(slug: string, id: number) {
   const { supabase } = await requireUser();
   const imageField = resource.fields.find((field) => field.type === "image");
 
-  const { data: current } = await supabase
-    .from(resource.table)
-    .select("*")
-    .eq(resource.idColumn, id)
-    .maybeSingle();
+  const [{ data: current }, imagens] = await Promise.all([
+    supabase.from(resource.table).select("*").eq(resource.idColumn, id).maybeSingle(),
+    resource.galeria ? listGaleria(resource.galeria, id, supabase) : Promise.resolve([]),
+  ]);
 
-  const { error } = await supabase
+  // .select() devolve as linhas apagadas: sem linha, nada foi excluído (ex.: RLS
+  // barrou em silêncio). Antes isso era tratado como sucesso e o registro
+  // "voltava" nas listas (itens 06 e 12 do relatório).
+  const { data: apagados, error } = await supabase
     .from(resource.table)
     .delete()
-    .eq(resource.idColumn, id);
+    .eq(resource.idColumn, id)
+    .select(resource.idColumn);
 
-  if (error) {
-    await registrarErroDb(`excluir ${resource.table} #${id}`, error, {
-      tabela: resource.table,
-      registroId: id,
-    });
-    const motivo = dbErrorCode(error) === "23503" ? "em-uso" : "falha";
+  if (error || !apagados?.length) {
+    await registrarErroDb(
+      `excluir ${resource.table} #${id}`,
+      error ?? new Error("Nenhuma linha excluída (permissão ou registro inexistente)."),
+      { tabela: resource.table, registroId: id },
+    );
+    const motivo = error && dbErrorCode(error) === "23503" ? "em-uso" : "falha";
     redirect(`/admin/${slug}/${id}?erro=${motivo}`);
   }
 
   const image = imageField && current ? current[imageField.name] : null;
   if (typeof image === "string") await removeImage(supabase, image);
+  await removerArquivos(supabase, imagens);
 
   revalidatePath("/", "layout");
   redirect(`/admin/${slug}?ok=excluido`);

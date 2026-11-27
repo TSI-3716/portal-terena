@@ -34,3 +34,15 @@ export function formatCurrency(value: number | null | undefined) {
     currency: "BRL",
   }).format(Number(value));
 }
+
+/** Data e hora no fuso de Mato Grosso do Sul, ex.: "26/11/2026 09:15". */
+export function formatDateTime(value: string | null | undefined) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: "America/Campo_Grande",
+  }).format(date);
+}

@@ -2,16 +2,24 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { excluirNoticia, salvarNoticia } from "@/app/admin/noticias/actions";
+import {
+  excluirNoticia,
+  type NoticiaFormValues,
+  salvarNoticia,
+} from "@/app/admin/noticias/actions";
 import { ConfirmButton } from "@/components/admin/confirm-button";
+import { GaleriaField, type GaleriaItem } from "@/components/admin/galeria-field";
 import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,25 +40,47 @@ import { getPublicAssetUrl } from "@/lib/storage";
 export function NoticiaForm({
   noticia,
   aldeias,
+  galeria = [],
 }: {
-  noticia?: Noticia & { id_aldeia?: number | string | null };
+  noticia?: Noticia;
   aldeias: { id_aldeia: number; nome: string }[];
+  galeria?: GaleriaItem[];
 }) {
   const [state, action, pending] = useActionState(salvarNoticia, null);
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<NoticiaFormValues>({
     titulo: noticia?.titulo ?? "",
     resumo: noticia?.resumo ?? "",
     conteudo: noticia?.conteudo ?? "",
-    data_publicacao: noticia?.data_publicacao ?? today(),
+    // A data vem do banco como timestamp; o campo date só aceita YYYY-MM-DD.
+    data_publicacao: noticia?.data_publicacao?.slice(0, 10) || today(),
     status: noticia?.status ?? "rascunho",
-    id_aldeia: noticia?.id_aldeia ? String(noticia.id_aldeia) : "",
+    fonte: noticia?.fonte ?? "",
+    id_aldeias: noticia?.aldeias.map((aldeia) => String(aldeia.id_aldeia)) ?? [],
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  function change(name: keyof typeof values, value: string) {
+  function change(name: Exclude<keyof NoticiaFormValues, "id_aldeias">, value: string) {
     setValues((current) => ({ ...current, [name]: value }));
     setTouched((current) => ({ ...current, [name]: true }));
   }
+
+  function toggleAldeia(id: string, checked: boolean) {
+    setValues((current) => ({
+      ...current,
+      id_aldeias: checked
+        ? [...new Set([...current.id_aldeias, id])]
+        : current.id_aldeias.filter((value) => value !== id),
+    }));
+  }
+
+  // Aldeia excluída não aparece nas opções, mas um vínculo antigo ainda listado
+  // continua visível para poder ser removido.
+  const opcoes = [
+    ...aldeias,
+    ...(noticia?.aldeias ?? []).filter(
+      (vinculada) => !aldeias.some((aldeia) => aldeia.id_aldeia === vinculada.id_aldeia),
+    ),
+  ];
 
   const parsed = noticiaSchema.safeParse(values);
   const allErrors = parsed.success ? {} : fieldErrorsFrom(parsed.error);
@@ -115,8 +145,13 @@ export function NoticiaForm({
               noticia?.imagem ? getPublicAssetUrl(noticia.imagem) : null
             }
           />
+          <GaleriaField imagens={galeria} />
           <Field data-invalid={Boolean(errors.data_publicacao) || undefined}>
             <FieldLabel htmlFor="data_publicacao">Data de publicação</FieldLabel>
+            <FieldDescription>
+              Data exibida no portal. A data de cadastro e a da última alteração são
+              gravadas automaticamente.
+            </FieldDescription>
             <Input
               id="data_publicacao"
               name="data_publicacao"
@@ -130,27 +165,47 @@ export function NoticiaForm({
               <FieldError>{errors.data_publicacao}</FieldError>
             ) : null}
           </Field>
-          <Field data-invalid={Boolean(errors.id_aldeia) || undefined}>
-            <FieldLabel htmlFor="id_aldeia">Aldeia</FieldLabel>
-            <NativeSelect
-              id="id_aldeia"
-              name="id_aldeia"
-              className="w-full"
-              value={values.id_aldeia}
-              aria-invalid={Boolean(errors.id_aldeia)}
-              onChange={(event) => change("id_aldeia", event.target.value)}
-            >
-              <NativeSelectOption value="">Selecione a aldeia</NativeSelectOption>
-              {aldeias.map((aldeia) => (
-                <NativeSelectOption key={aldeia.id_aldeia} value={String(aldeia.id_aldeia)}>
-                  {aldeia.nome}
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-            {aldeias.length === 0 ? (
+          <FieldSet>
+            <FieldLegend variant="label">Aldeias relacionadas</FieldLegend>
+            <FieldDescription>
+              Opcional. Deixe tudo desmarcado para uma notícia geral do povo Terena, ou
+              marque uma ou mais aldeias.
+            </FieldDescription>
+            {opcoes.length === 0 ? (
               <FieldDescription>Nenhuma aldeia cadastrada ainda.</FieldDescription>
-            ) : null}
-            {errors.id_aldeia ? <FieldError>{errors.id_aldeia}</FieldError> : null}
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {opcoes.map((aldeia) => {
+                  const id = String(aldeia.id_aldeia);
+                  return (
+                    <label key={id} className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        name="id_aldeias"
+                        value={id}
+                        checked={values.id_aldeias.includes(id)}
+                        onCheckedChange={(next) => toggleAldeia(id, next === true)}
+                      />
+                      {aldeia.nome}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+            {errors.id_aldeias ? <FieldError>{errors.id_aldeias}</FieldError> : null}
+          </FieldSet>
+          <Field data-invalid={Boolean(errors.fonte) || undefined}>
+            <FieldLabel htmlFor="fonte">Fonte</FieldLabel>
+            <Input
+              id="fonte"
+              name="fonte"
+              value={values.fonte}
+              maxLength={500}
+              placeholder="https://... ou nome do veículo / pessoa entrevistada"
+              aria-invalid={Boolean(errors.fonte)}
+              onChange={(event) => change("fonte", event.target.value)}
+            />
+            <FieldDescription>Origem da informação. Link ou referência em texto.</FieldDescription>
+            {errors.fonte ? <FieldError>{errors.fonte}</FieldError> : null}
           </Field>
           <Field data-invalid={Boolean(errors.status) || undefined}>
             <FieldLabel htmlFor="status">Status</FieldLabel>
