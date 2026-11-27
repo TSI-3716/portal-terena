@@ -14,11 +14,20 @@ import { VillageMap } from "@/components/village-map-client";
 import {
   aldeiaHref,
   listAldeias,
-  listLocalizacoes,
+  listLocalizacoes, 
   municipio,
 } from "@/lib/conteudo";
 import { staticImage } from "@/lib/images";
 import { resolveImageUrl } from "@/lib/storage";
+
+function resumirTexto(texto: string | null | undefined, limite = 140) {
+  const limpo = (texto ?? "").trim().replace(/\s+/g, " ");
+  if (!limpo) return "";
+  if (limpo.length <= limite) return limpo;
+  const cortado = limpo.slice(0, limite);
+  const ultimoEspaco = cortado.lastIndexOf(" ");
+  return `${(ultimoEspaco > 60 ? cortado.slice(0, ultimoEspaco) : cortado).trimEnd()}…`;
+}
 
 export const metadata: Metadata = { title: "Nossas Aldeias" };
 
@@ -83,7 +92,7 @@ export default async function AldeiasPage({
                 search={`${aldeia.nome} ${aldeia.localizacao ?? ""}`}
                 meta={aldeia.localizacao ?? undefined}
                 title={aldeia.nome}
-                description={aldeia.descricao ?? ""}
+                description={resumirTexto(aldeia.descricao, 140)}
                 href={aldeiaHref(aldeia)}
                 hrefLabel="Ver detalhes"
                 imageSrc={resolveImageUrl(aldeia.imagem)}

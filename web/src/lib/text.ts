@@ -1,5 +1,12 @@
+export const LIMITE_DESCRICAO_CARD = 140;
 /** Tamanho padrão do resumo exibido nos cards e nos resultados de busca. */
 export const RESUMO_MAX = 160;
+
+export function resumirTexto(texto: string, limite = LIMITE_DESCRICAO_CARD): string {
+  const limpo = texto.trim();
+  if (limpo.length <= limite) return limpo;
+  return `${limpo.slice(0, limite).trimEnd()}...`;
+}
 
 /**
  * Resumo para exibição: junta espaços e corta no fim da última palavra que
